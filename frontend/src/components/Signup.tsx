@@ -1,10 +1,8 @@
-import * as React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -12,6 +10,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useSignUp, User } from "../hooks/useSignUp";
 
 function Copyright(props: any) {
   return (
@@ -33,14 +32,28 @@ function Copyright(props: any) {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function SignUp() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+const SignUp = () => {
+  console.log("refresh");
+  const [userInfo, setUserInfo] = useState<User>({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
+  const { signUp, isLoading, error } = useSignUp();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    console.log(userInfo);
+    await signUp(userInfo);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setUserInfo((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
   };
 
   return (
@@ -72,6 +85,7 @@ export default function SignUp() {
                   name="firstName"
                   required
                   fullWidth
+                  onChange={handleChange}
                   id="firstName"
                   label="First Name"
                   autoFocus
@@ -81,6 +95,7 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
+                  onChange={handleChange}
                   id="lastName"
                   label="Last Name"
                   name="lastName"
@@ -91,6 +106,7 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
+                  onChange={handleChange}
                   id="email"
                   label="Email Address"
                   name="email"
@@ -101,6 +117,7 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
+                  onChange={handleChange}
                   name="password"
                   label="Password"
                   type="password"
@@ -108,20 +125,18 @@ export default function SignUp() {
                   autoComplete="new-password"
                 />
               </Grid>
-              <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
-                  }
-                  label="I want to receive inspiration, marketing promotions and updates via email."
-                />
-              </Grid>
             </Grid>
+            {error && (
+              <Typography color="red" align="center" variant={"subtitle2"}>
+                {error}
+              </Typography>
+            )}
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}>
+              sx={{ mt: 3, mb: 2 }}
+              disabled={isLoading}>
               Sign Up
             </Button>
             <Grid container justifyContent="flex-end">
@@ -137,4 +152,6 @@ export default function SignUp() {
       </Container>
     </ThemeProvider>
   );
-}
+};
+
+export default SignUp;

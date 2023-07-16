@@ -1,21 +1,16 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import React from "react";
 import Login from "./Login";
-import MapChart from "./MapChart";
+import WorldMap from "./WorldMap";
 import Signup from "./Signup";
+import Header from "./Header";
+import { AuthContextProvider } from "../context/AuthContext";
 
 const App = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <MapChart />,
-      // errorElement: <ErrorPage />,
-      // loader: rootLoader,
-      // children: [
-      //   {
-      //     path: "contacts/:contactId",
-      //     element: <Contact />,
-      //   },
-      // ],
+      element: <WorldMap />,
     },
     {
       path: "/login",
@@ -27,7 +22,14 @@ const App = () => {
     },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <React.StrictMode>
+      <AuthContextProvider>
+        <Header />
+        <RouterProvider router={router} />
+      </AuthContextProvider>
+    </React.StrictMode>
+  );
 };
 
 export default App;

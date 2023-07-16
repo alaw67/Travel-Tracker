@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useRef } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -12,6 +12,8 @@ import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useLogIn } from "../hooks/useLogIn";
+import { useNavigate } from "react-router-dom";
 
 type CopyrightProps = {
   styles: any;
@@ -37,14 +39,20 @@ function Copyright({ styles }: CopyrightProps) {
 // TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
-export default function SignInSide() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+const Login = () => {
+  const navigate = useNavigate();
+  const emailRef = useRef<string>("");
+  const passwordRef = useRef<string>("");
+  const { logIn, error, isLoading } = useLogIn();
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
     console.log({
-      email: data.get("email"),
-      password: data.get("password"),
+      email: emailRef.current,
+      password: passwordRef.current,
     });
+
+    await logIn(emailRef.current, passwordRef.current);
+    navigate("/");
   };
 
   return (
@@ -92,6 +100,7 @@ export default function SignInSide() {
                 margin="normal"
                 required
                 fullWidth
+                onChange={(e) => (emailRef.current = e.target.value)}
                 id="email"
                 label="Email Address"
                 name="email"
@@ -102,6 +111,7 @@ export default function SignInSide() {
                 margin="normal"
                 required
                 fullWidth
+                onChange={(e) => (passwordRef.current = e.target.value)}
                 name="password"
                 label="Password"
                 type="password"
@@ -112,10 +122,16 @@ export default function SignInSide() {
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
+              {error && (
+                <Typography color="red" align="center" variant={"subtitle2"}>
+                  {error}
+                </Typography>
+              )}
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
+                disabled={isLoading}
                 sx={{ mt: 3, mb: 2 }}>
                 Sign In
               </Button>
@@ -138,4 +154,6 @@ export default function SignInSide() {
       </Grid>
     </ThemeProvider>
   );
-}
+};
+
+export default Login;

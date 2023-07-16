@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import geoData from "../data/geoData.json";
-
-const MapChart = () => {
-  const [selectedCountry, setSelectedCountry] = useState(null);
-
-  const handleCountryClick = (geo) => {
-    setSelectedCountry(geo);
+import { Box, Typography, TextField } from "@mui/material";
+import { useAuthContext } from "../hooks/useAuthContext";
+  const handleCountryClick = (country) => {
+    setVisitedCountries([...visitedCountries, country]);
+    setSelectedCountry(country);
   };
 
-  const handleCountryHover = (geo) => {
-    setSelectedCountry(geo);
+  const handleCountryHover = (country) => {
+    setSelectedCountry(country);
   };
 
   const handleCountryLeave = () => {
@@ -18,20 +17,37 @@ const MapChart = () => {
   };
 
   return (
-    <div>
+    <Box
+      sx={{
+        overflow: "hidden",
+        paddingTop: "20px",
+        backgroundColor: "#2a354d",
+      }}>
+      {/* <TextField
+        id="outlined-basic"
+        label="Add a Country"
+        variant="outlined"
+        sx={{ alignContent: "center" }}
+      /> */}
       {selectedCountry ? (
-        <div>{selectedCountry.properties.name}</div>
+        <Typography variant="h5" textAlign="center" sx={{ color: "white" }}>
+          {selectedCountry.properties.name}
+        </Typography>
       ) : (
-        <div>nothing</div>
+        <Typography variant="h5" textAlign="center" sx={{ color: "white" }}>
+          nothing
+        </Typography>
       )}
       <ComposableMap
         projectionConfig={{
-          rotate: [-10, 0, 0],
-          scale: 147,
+          rotate: [-20, 0, 0],
+          scale: 130,
         }}
+        height={340}
         style={{
           width: "100%",
-          height: "auto",
+          height: "100%",
+          overflow: "hidden",
         }}>
         <Geographies geography={geoData}>
           {({ geographies }) =>
@@ -44,11 +60,11 @@ const MapChart = () => {
                 onMouseLeave={() => handleCountryLeave()}
                 style={{
                   default: {
-                    fill: "#D6D6DA",
+                    fill: visitedCountries.includes(geo) ? "green" : "white",
                     outline: "none",
                   },
                   hover: {
-                    fill: "#F53",
+                    fill: "gray",
                     outline: "none",
                   },
                   selected: {
@@ -56,6 +72,7 @@ const MapChart = () => {
                     outline: "none",
                   },
                   pressed: {
+                    fill: "#6B8E23",
                     outline: "none",
                   },
                 }}
@@ -64,8 +81,8 @@ const MapChart = () => {
           }
         </Geographies>
       </ComposableMap>
-    </div>
+    </Box>
   );
 };
 
-export default MapChart;
+export default WorldMap;
