@@ -3,7 +3,6 @@ import React from "react";
 import Login from "./Login";
 import Home from "./Home";
 import Signup from "./Signup";
-import Header from "./Header";
 import { AuthContextProvider } from "../context/AuthContext";
 
 const App = () => {
