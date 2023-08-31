@@ -20,6 +20,7 @@
     "bootstrap": "^5.2.3",
     "mdb-react-ui-kit": "^6.0.0",
     "react": "^18.2.0",
+    "react-circle-flags": "^0.0.19",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.1",
     "react-scripts": "5.0.1",
@@ -52,6 +53,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-simple-maps": "^3.0.0",
     "http-proxy-middleware": "^2.0.6"
   }
 }

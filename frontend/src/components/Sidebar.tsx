@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 
 const Sidebar = () => {
-  return <Box sx={{ width: "300px", backgroundColor: "#324D65" }}>Sidebar</Box>;
+  return <Box sx={{ width: "300px", backgroundColor: "#33383e" }}>Sidebar</Box>;
 };
 
 export default Sidebar;

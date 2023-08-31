@@ -28,7 +28,7 @@ function Copyright({ styles }: CopyrightProps) {
       {...styles}>
       {"Copyright © "}
       <Link color="inherit" href="https://mui.com/">
-        My Travel Journal
+        Travel Tracker
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}

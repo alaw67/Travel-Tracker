@@ -1,75 +1,83 @@
 import React, { useState } from "react";
-import { styled } from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import InputBase from "@mui/material/InputBase";
-import SearchIcon from "@mui/icons-material/Search";
-import AccountCircle from "@mui/icons-material/AccountCircle";
+import countries from "../data/countries";
+import { Box, TextField, List, ListItemButton } from "@mui/material";
 
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: "white",
-  "&:hover": {
-    backgroundColor: "#F7F9FC",
-  },
-  marginLeft: 0,
-  width: "100%",
-}));
+const AutocompleteSearchBar = () => {
+  const [inputValue, setInputValue] = useState<string>("");
+  const [filteredCountries, setFilteredCountries] = useState<string[]>([]);
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const [focused, setFocused] = useState<boolean>(false);
 
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  color: "black",
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setInputValue(value);
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "black",
-  width: "100%",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-  },
-}));
+    if (!value) {
+      setShowDropdown(false);
+    } else {
+      const filtered = countries.filter((country) =>
+        country.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredCountries(filtered);
 
-const CountrySearchBar = () => {
-  const [input, setInput] = useState("");
+      setShowDropdown(filtered.length > 0);
+    }
+  };
+
+  const handleSelectCountry = (country: string) => {
+    setInputValue(country);
+    setFilteredCountries([]);
+    setShowDropdown(false);
+  };
+
   return (
-    <Box>
-      <AppBar position="static">
-        <Toolbar sx={{ backgroundColor: "white" }}>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search for a country to add…"
-              inputProps={{ "aria-label": "search" }}
-            />
-          </Search>
-          <Box />
-          <Box>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              color="default">
-              <AccountCircle />
-            </IconButton>
-          </Box>
-        </Toolbar>
-      </AppBar>
+    <Box
+      sx={{
+        backgroundColor: "#FFFFFF",
+        boxShadow: "0 0px 10px 0 rgba(0, 0, 0, 0.19)",
+      }}>
+      <Box
+        sx={{
+          margin: "8px",
+        }}>
+        <TextField
+          sx={{
+            "& fieldset": { border: "none" },
+            position: "relative",
+            "&:hover": { backgroundColor: "#fcfcfc" },
+            backgroundColor: focused ? "#fcfcfc" : "#FFFFFF",
+            width: "95%",
+            borderRadius: "10px",
+          }}
+          onFocus={() => setFocused(!focused)}
+          onBlur={() => setFocused(!focused)}
+          type="text"
+          variant="outlined"
+          value={inputValue}
+          onChange={handleInputChange}
+          placeholder="Search for a country to add..."
+        />
+        {showDropdown && (
+          <List
+            sx={{
+              position: "absolute",
+              backgroundColor: "white",
+              boxShadow: "0px 8px 6px -6px rgba(0, 0, 0, 0.1)",
+              borderRadius: "4px",
+              width: "400px",
+            }}>
+            {filteredCountries.slice(0, 7).map((country) => (
+              <ListItemButton
+                key={country}
+                onClick={() => handleSelectCountry(country)}>
+                {country}
+              </ListItemButton>
+            ))}
+          </List>
+        )}
+      </Box>
     </Box>
   );
 };
 
-export default CountrySearchBar;
+export default AutocompleteSearchBar;
