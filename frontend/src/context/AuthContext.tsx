@@ -7,9 +7,17 @@ type Action = {
   payload: any;
 };
 
+export type UserState = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  id: string;
+  token: string;
+};
+
 type State = {
-  user: any;
-} | null;
+  user: UserState | null;
+};
 
 export const authReducer = (state: State, action: Action): State => {
   switch (action.type) {

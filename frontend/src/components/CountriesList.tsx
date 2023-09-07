@@ -4,51 +4,69 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import countryCodes from "../data/countryCodes";
 import { CircleFlag } from "react-circle-flags";
-
-const CountryItem = ({ countryName }: { countryName: string }) => {
-  var countryCode: string =
-    countryCodes[countryName as keyof typeof countryCodes];
-  return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: "#F6FCFF",
-        width: "95%",
-        height: "55px",
-        marginLeft: "25px",
-        marginTop: "7px",
-        borderRadius: "50px 15px 15px 50px",
-        boxShadow: "0px 3px 5px 1px rgba(0, 0, 0, 0.2)",
-      }}>
-      <CircleFlag
-        // style={{ marginLeft: "-10px" }}
-        countryCode={countryCode}
-        height="55"
-      />
-      <Typography sx={{ marginLeft: "30px" }} variant="subtitle1">
-        {countryName}
-      </Typography>
-    </Box>
-  );
-};
+import CloseIcon from "@mui/icons-material/Close";
+import { UserState } from "../context/AuthContext";
 
 const CountriesList = ({
   visitedCountries,
-  isMapOpen,
+  setIsModalOpen,
   setIsMapOpen,
+  setCountryToRemove,
+  user,
 }: {
   visitedCountries: string[];
-  isMapOpen: boolean;
+  setIsModalOpen: (isOpen: boolean) => void;
   setIsMapOpen: (isOpen: boolean) => void;
+  setCountryToRemove: (country: string) => void;
+  user: UserState;
 }) => {
-  const [open, setOpen] = useState<Boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
+
+  const CountryItem = ({ countryName }: { countryName: string }) => {
+    var countryCode: string =
+      countryCodes[countryName as keyof typeof countryCodes];
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          backgroundColor: "#F6FCFF",
+          width: "95%",
+          height: "55px",
+          marginLeft: "25px",
+          marginTop: "7px",
+          borderRadius: "50px 15px 15px 50px",
+          boxShadow: "0px 3px 5px 1px rgba(0, 0, 0, 0.2)",
+        }}>
+        <CircleFlag countryCode={countryCode} height="55" />
+        <Typography sx={{ marginLeft: "30px" }} variant="subtitle1">
+          {countryName}
+        </Typography>
+        <Box
+          onClick={() => {
+            setIsModalOpen(true);
+            setCountryToRemove(countryName);
+            setIsModalOpen(true);
+          }}
+          sx={{ marginLeft: "auto", marginRight: "10px" }}>
+          <CloseIcon
+            sx={{
+              cursor: "pointer",
+              fontSize: "15px",
+              color: "#c20000",
+            }}
+          />
+        </Box>
+      </Box>
+    );
+  };
   if (open) {
     return (
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
+          border: "1px solid #d8dfe3",
           height:
             80 +
             (visitedCountries.length > 8 ? 8 : visitedCountries.length) * 62 +
@@ -70,7 +88,10 @@ const CountriesList = ({
             }`}
           </Typography>
           <Box
-            onClick={() => setOpen(false)}
+            onClick={() => {
+              setOpen(false);
+              setIsMapOpen(true);
+            }}
             sx={{
               marginRight: "30px",
               marginTop: "14px",
@@ -83,6 +104,8 @@ const CountriesList = ({
         <Box
           sx={{
             marginTop: "15px",
+            paddingBottom: "20px",
+            overflowY: "scroll",
           }}>
           {visitedCountries.map((country, i) => (
             <CountryItem key={i} countryName={country} />
@@ -101,6 +124,7 @@ const CountriesList = ({
           justifyContent: "space-between",
           backgroundColor: "#f2f5f7",
           borderRadius: "10px",
+          border: "1px solid #d8dfe3",
         }}>
         <Typography
           variant="h6"
