@@ -1,27 +1,39 @@
 import React, { useState, useEffect } from "react";
 import WorldMap from "./WorldMap";
-import { Button, Typography } from "@mui/material";
-import Analytics from "./Analytics";
-import SideBar from "./Sidebar";
+import { Box, IconButton } from "@mui/material";
 import Search from "./CountrySearchBar";
 import CountriesList from "./CountriesList";
 import { useAuthContext } from "../hooks/useAuthContext";
-import { UserState } from "../context/AuthContext";
-
-import { Box } from "@mui/material";
+import { RemoveConfirmationModal } from "./RemoveConfirmationModal";
+import { FollowingList } from "./FollowingList";
+import { useNavigate } from "react-router-dom";
+import OutlinedFlagIcon from "@mui/icons-material/OutlinedFlag";
+import FlagRoundedIcon from "@mui/icons-material/FlagRounded";
+import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
+import PeopleIcon from "@mui/icons-material/People";
 
 const Home = () => {
-  const [visitedCountries, setVisitedCountries] = useState<string[]>([]);
   const { user } = useAuthContext();
+  const navigate = useNavigate();
+
+  if (!user) {
+    navigate("/login");
+  }
+
+  const [visitedCountries, setVisitedCountries] = useState<[string]>([""]);
   const [isMapOpen, setIsMapOpen] = useState<boolean>(true);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [isCountriesModalOpen, setIsCountriesModalOpen] =
+    useState<boolean>(false);
+  const [userToRemove, setUserToRemove] = useState<string>("");
   const [countryToRemove, setCountryToRemove] = useState<string>("");
+  const [showCountriesList, setShowCountriesList] = useState<boolean>(true);
+  const [me, setMe] = useState<any>({});
+
   console.log("user: ", user);
 
   useEffect(() => {
-    const getVisitedCountries = async () => {
-      console.log("token...", user?.token);
-      const response = await fetch("/api/users/countries", {
+    const getMe = async () => {
+      const response = await fetch("/api/users/me", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -29,108 +41,59 @@ const Home = () => {
         },
       });
 
-      console.log("response: ", response);
-
       if (!response.ok) {
+        console.log("failed to get your user details");
+      } else {
+        const myUser = await response.json();
+        console.log("myUser", myUser);
+        setMe(myUser);
+      }
+    };
+    const getVisitedCountries = async () => {
+      const countriesResponse = await fetch("/api/users/countries", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+
+      console.log("response: ", countriesResponse);
+
+      if (!countriesResponse.ok) {
         console.log("response failed");
       } else {
-        const countries = await response.json();
+        const countries = await countriesResponse.json();
         console.log("countries: ", countries);
         setVisitedCountries(countries.visitedCountries);
       }
     };
     console.log("token: ", user?.token);
     if (user?.token) {
-      console.log("getting countries");
       getVisitedCountries();
+      getMe();
     }
   }, [user]);
 
-  const RemoveConfirmationModal = ({ country }: { country: string }) => {
-    const removeVisitedCountry = async (country: string) => {
-      console.log("token...", user?.token);
-      const response = await fetch("/api/users/countries/delete", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-        body: JSON.stringify({ country: country }),
-      });
+  const removeVisitedCountry = async (country: string): Promise<any> => {
+    const response = await fetch("/api/users/countries/delete", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token}`,
+      },
+      body: JSON.stringify({ country: country }),
+    });
 
-      console.log("response: ", response);
+    console.log("response: ", response);
 
-      if (!response.ok) {
-        console.log("response failed");
-      } else {
-        const countries = await response.json();
-        console.log("countries: ", countries);
-        setVisitedCountries(countries.visitedCountries);
-      }
-    };
-
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          position: "fixed",
-          top: "0px",
-          width: "100%",
-          height: "100%",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-        }}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            width: "500px",
-            height: "200px",
-            backgroundColor: "white",
-            borderRadius: "10px",
-          }}>
-          <Box>
-            <Typography
-              sx={{
-                textAlign: "center",
-                marginX: "20px",
-                marginBottom: "15px",
-              }}
-              variant="h6">
-              {`Are you sure you want to remove ${country} from your visited countries?`}
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                gap: "10px",
-              }}>
-              <Button
-                variant="contained"
-                sx={{
-                  backgroundColor: "#de362a",
-                  color: "white",
-                  "&:hover": { backgroundColor: "#cf3227" },
-                }}
-                onClick={() => {
-                  removeVisitedCountry(countryToRemove);
-                  setIsModalOpen(false);
-                }}>
-                Remove
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  setIsModalOpen(false);
-                }}>
-                Cancel
-              </Button>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-    );
+    if (!response.ok) {
+      console.log("response failed");
+    } else {
+      const countries = await response.json();
+      console.log("countries: ", countries);
+      setVisitedCountries(countries.visitedCountries);
+    }
   };
 
   return (
@@ -138,11 +101,9 @@ const Home = () => {
       sx={{
         display: "flex",
         flexDirection: "row",
-        backgroundColor: "#FFFFFF",
         height: "100vh",
         overflowY: "hidden",
       }}>
-      <SideBar user={user} />
       <Box
         sx={{
           width: "100%",
@@ -150,30 +111,79 @@ const Home = () => {
           height: "inherit",
           flexDirection: "column",
         }}>
-        <Search user={user} setVisitedCountries={setVisitedCountries} />
+        <Box
+          sx={{
+            display: "inline-flex",
+            flexDirection: "row",
+            marginTop: "10px",
+            alignItems: "center",
+          }}>
+          <Search user={user} setVisitedCountries={setVisitedCountries} />
+          <Box
+            sx={{
+              display: "inline-flex",
+              marginRight: "10px",
+            }}>
+            <IconButton
+              onClick={() => {
+                setShowCountriesList(!showCountriesList);
+              }}>
+              {showCountriesList ? <FlagRoundedIcon /> : <OutlinedFlagIcon />}
+            </IconButton>
+            <IconButton
+              onClick={() => {
+                setShowCountriesList(!showCountriesList);
+              }}>
+              {showCountriesList ? <PeopleOutlineIcon /> : <PeopleIcon />}
+            </IconButton>
+          </Box>
+        </Box>
         <Box
           sx={{
             display: "flex",
             flexDirection: "column",
             flex: 1,
-            gap: "10px",
-            margin: "15px",
+            margin: "10px",
           }}>
-          <CountriesList
-            visitedCountries={visitedCountries}
-            setIsModalOpen={setIsModalOpen}
-            setCountryToRemove={setCountryToRemove}
-            setIsMapOpen={setIsMapOpen}
-            user={user}
-          />
-          <WorldMap
-            visitedCountries={visitedCountries}
-            isMapOpen={isMapOpen}
-            setIsMapOpen={setIsMapOpen}
-          />
+          <Box
+            sx={{
+              // alignItems: "stretch",
+              display: "inline-flex",
+              position: "relative",
+              gap: "10px",
+            }}>
+            <WorldMap
+              visitedCountries={visitedCountries}
+              isMapOpen={isMapOpen}
+              setIsMapOpen={setIsMapOpen}
+            />
+            <Box sx={{ width: "20%" }}>
+              {showCountriesList ? (
+                <CountriesList
+                  visitedCountries={visitedCountries}
+                  setIsModalOpen={setIsCountriesModalOpen}
+                  setCountryToRemove={setCountryToRemove}
+                  setIsMapOpen={setIsMapOpen}
+                  user={user}
+                />
+              ) : (
+                <FollowingList
+                  following={me.following}
+                  setUserToRemove={setUserToRemove}
+                  userToken={user.token}
+                />
+              )}
+            </Box>
+          </Box>
         </Box>
       </Box>
-      {isModalOpen && <RemoveConfirmationModal country={countryToRemove} />}
+      {isCountriesModalOpen && (
+        <RemoveConfirmationModal
+          item={countryToRemove}
+          remove={removeVisitedCountry}
+          setIsModalOpen={setIsCountriesModalOpen}
+        />
+      )}
     </Box>
   );
 };

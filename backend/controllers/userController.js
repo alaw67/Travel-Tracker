@@ -18,6 +18,8 @@ const loginUser = asyncHandler(async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      following: [],
+      followers: [],
       token: generateToken(user.id),
     });
   } else {
@@ -53,8 +55,12 @@ const registerUser = asyncHandler(async (req, res) => {
     firstName,
     lastName,
     email,
+    following: [],
+    followers: [],
     password: hashedPassword,
   });
+
+  console.log("created user", user);
 
   if (user) {
     res.status(201).json({
@@ -62,6 +68,8 @@ const registerUser = asyncHandler(async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      following: [],
+      followers: [],
       token: generateToken(user.id),
     });
   } else {
@@ -73,54 +81,32 @@ const registerUser = asyncHandler(async (req, res) => {
 // Get current user
 const getMe = asyncHandler(async (req, res) => {
   console.log("req.user: ", req.user);
-  const { id, firstName, lastName, email } = req.user;
+  const { id, firstName, lastName, email, following, followers } = req.user;
 
   res.status(200).json({
     firstName,
     lastName,
     id,
     email,
+    following,
+    followers,
   });
 });
 
-const getVisitedCountries = asyncHandler(async (req, res) => {
-  const { visitedCountries } = req.user;
-  res.status(200).json({
-    visitedCountries,
-  });
-});
-
-const addVisitedCountry = asyncHandler(async (req, res) => {
-  const { country } = req.body;
-
-  console.log("visitedCountries: ", req.user.visitedCountries);
-  if (req.user.visitedCountries.includes(country)) {
+const getUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  console.log("user: ", user);
+  const { firstName, lastName, id } = user;
+  if (user) {
+    res.status(200).json({
+      firstName,
+      lastName,
+      id,
+    });
+  } else {
     res.status(400);
-    throw new Error("Country already added!");
+    throw new Error("Cannot get user!");
   }
-  req.user.visitedCountries.push(country);
-
-  await req.user.save();
-  console.log("visitedCountries: ", req.user.visitedCountries);
-  const { visitedCountries } = req.user;
-  res.status(200).json({
-    visitedCountries,
-  });
-});
-
-const removeVisitedCountry = asyncHandler(async (req, res) => {
-  const { country } = req.body;
-  const index = req.user.visitedCountries.indexOf(country);
-  if (index === -1) {
-    res.status(400);
-    throw new Error("Country does not exist in visited countries");
-  }
-  req.user.visitedCountries.splice(index, 1);
-  await req.user.save();
-  const { visitedCountries } = req.user;
-  res.status(200).json({
-    visitedCountries,
-  });
 });
 
 // Generate JWT
@@ -128,11 +114,4 @@ const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
-export {
-  loginUser,
-  registerUser,
-  getMe,
-  getVisitedCountries,
-  addVisitedCountry,
-  removeVisitedCountry,
-};
+export { loginUser, registerUser, getMe, getUser };

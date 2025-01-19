@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useRef } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -13,7 +13,6 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useLogIn } from "../hooks/useLogIn";
-import { useNavigate } from "react-router-dom";
 
 type CopyrightProps = {
   styles: any;
@@ -40,7 +39,6 @@ function Copyright({ styles }: CopyrightProps) {
 const defaultTheme = createTheme();
 
 const Login = () => {
-  const navigate = useNavigate();
   const emailRef = useRef<string>("");
   const passwordRef = useRef<string>("");
   const { logIn, error, isLoading } = useLogIn();
@@ -52,7 +50,6 @@ const Login = () => {
     });
 
     await logIn(emailRef.current, passwordRef.current);
-    navigate("/");
   };
 
   return (

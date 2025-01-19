@@ -8,7 +8,7 @@ const AutocompleteSearchBar = ({
   setVisitedCountries,
 }: {
   user: UserState;
-  setVisitedCountries: (countries: string[]) => void;
+  setVisitedCountries: (countries: [string]) => void;
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [filteredCountries, setFilteredCountries] =
@@ -33,6 +33,7 @@ const AutocompleteSearchBar = ({
   };
 
   const handleSelectCountry = (country: string) => {
+    console.log("clicked!!!");
     setInputValue("");
     addVisitedCountry(country);
     setFilteredCountries(countries);
@@ -61,58 +62,52 @@ const AutocompleteSearchBar = ({
     }
   };
   return (
-    <Box
-      sx={{
-        backgroundColor: "#FFFFFF",
-        boxShadow: "0 0px 10px 0 rgba(0, 0, 0, 0.19)",
-      }}>
-      <Box
+    <Box sx={{ margin: "0 auto", width: "30%" }}>
+      <TextField
         sx={{
-          margin: "8px",
-        }}>
-        <TextField
+          "& fieldset": { border: "none" },
+          position: "relative",
+          "&:hover": { backgroundColor: "#fcfcfc" },
+          backgroundColor: focused ? "#fcfcfc" : "#f2f5f7",
+          borderRadius: "20px",
+          width: "100%",
+        }}
+        onFocus={(e) => {
+          setFocused(!focused);
+          setShowDropdown(true);
+        }}
+        onBlur={() => {
+          setFocused(!focused);
+          setShowDropdown(false);
+        }}
+        type="text"
+        variant="outlined"
+        value={inputValue}
+        onChange={handleInputChange}
+        placeholder="Search for a country to add..."
+      />
+      {showDropdown && (
+        <List
           sx={{
-            "& fieldset": { border: "none" },
-            position: "relative",
-            "&:hover": { backgroundColor: "#fcfcfc" },
-            backgroundColor: focused ? "#fcfcfc" : "#FFFFFF",
-            width: "95%",
-            borderRadius: "10px",
-          }}
-          onFocus={(e) => {
-            setFocused(!focused);
-            setShowDropdown(true);
-          }}
-          onBlur={() => {
-            setFocused(!focused);
-            setShowDropdown(false);
-          }}
-          type="text"
-          variant="outlined"
-          value={inputValue}
-          onChange={handleInputChange}
-          placeholder="Search for a country to add..."
-        />
-        {showDropdown && (
-          <List
-            sx={{
-              position: "absolute",
-              backgroundColor: "white",
-              boxShadow: "0px 8px 6px -6px rgba(0, 0, 0, 0.1)",
-              borderRadius: "4px",
-              width: "400px",
-              zIndex: "100",
-            }}>
-            {filteredCountries.slice(0, 7).map((country) => (
-              <ListItemButton
-                key={country}
-                onClick={() => handleSelectCountry(country)}>
-                {country}
-              </ListItemButton>
-            ))}
-          </List>
-        )}
-      </Box>
+            position: "absolute",
+            backgroundColor: "white",
+            boxShadow: "0px 8px 6px -6px rgba(0, 0, 0, 0.1)",
+            borderRadius: "4px",
+            width: "400px",
+            zIndex: "100",
+          }}>
+          {filteredCountries.slice(0, 7).map((country) => (
+            <ListItemButton
+              key={country}
+              onMouseOver={() => {
+                console.log("hell0");
+              }}
+              onMouseDown={() => handleSelectCountry(country)}>
+              {country}
+            </ListItemButton>
+          ))}
+        </List>
+      )}
     </Box>
   );
 };

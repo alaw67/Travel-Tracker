@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useAuthContext } from "./useAuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const useLogIn = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { dispatch } = useAuthContext();
+  const navigate = useNavigate();
 
   const logIn = async (email: string, password: string) => {
     setIsLoading(true);
@@ -26,6 +28,7 @@ export const useLogIn = () => {
       console.log("response failed");
       setIsLoading(false);
       setError(data.message);
+      return false;
     } else {
       // save the user to local storage
       localStorage.setItem("user", JSON.stringify(data));
@@ -33,6 +36,7 @@ export const useLogIn = () => {
       dispatch({ type: "LOGIN", payload: data });
 
       setIsLoading(false);
+      navigate("/");
     }
   };
   return { logIn, isLoading, error };
