@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Avatar from "@mui/material/Avatar";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 type followedUser = {
   firstName: string;

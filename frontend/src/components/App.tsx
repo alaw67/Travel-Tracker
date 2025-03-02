@@ -22,11 +22,9 @@ const App = () => {
   ]);
 
   return (
-    <React.StrictMode>
-      <AuthContextProvider>
-        <RouterProvider router={router} />
-      </AuthContextProvider>
-    </React.StrictMode>
+    <AuthContextProvider>
+      <RouterProvider router={router} />
+    </AuthContextProvider>
   );
 };
 

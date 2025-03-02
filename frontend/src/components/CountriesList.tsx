@@ -1,24 +1,21 @@
 import React, { useState } from "react";
-import { Box, Typography, Button } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { Box, Typography, IconButton } from "@mui/material";
 import countryCodes from "../data/countryCodes";
 import { CircleFlag } from "react-circle-flags";
 import CloseIcon from "@mui/icons-material/Close";
-import { UserState } from "../context/AuthContext";
 
 const CountriesList = ({
   visitedCountries,
   setIsModalOpen,
   setIsMapOpen,
   setCountryToRemove,
-  user,
+  setFocusedCountry,
 }: {
   visitedCountries: [string];
   setIsModalOpen: (isOpen: boolean) => void;
   setIsMapOpen: (isOpen: boolean) => void;
   setCountryToRemove: (country: string) => void;
-  user: UserState;
+  setFocusedCountry: (country: string) => void;
 }) => {
   const [hoveredCountry, setHoveredCountry] = useState("");
 
@@ -36,32 +33,42 @@ const CountriesList = ({
           marginTop: "7px",
           borderRadius: "50px 15px 15px 50px",
           boxShadow: "0px 3px 5px 1px rgba(0, 0, 0, 0.2)",
+          cursor: "pointer",
+          "&:hover": {
+            backgroundColor: "#e6edf0",
+          },
         }}
         onMouseEnter={() => {
           setHoveredCountry(countryName);
         }}
         onMouseLeave={() => {
           setHoveredCountry("");
+        }}
+        onClick={() => {
+          setFocusedCountry(countryName);
+          setIsMapOpen(false);
         }}>
         <CircleFlag countryCode={countryCode} height="40" />
         <Typography sx={{ marginLeft: "30px" }} variant="body1">
           {countryName}
         </Typography>
         <Box
-          onClick={() => {
+          onClick={(e) => {
             setIsModalOpen(true);
             setCountryToRemove(countryName);
-            setIsModalOpen(true);
+            e.stopPropagation();
           }}
           sx={{ marginLeft: "auto", marginRight: "10px" }}>
           {hoveredCountry === countryName && (
-            <CloseIcon
-              sx={{
-                cursor: "pointer",
-                fontSize: "15px",
-                color: "#c20000",
-              }}
-            />
+            <IconButton>
+              <CloseIcon
+                sx={{
+                  cursor: "pointer",
+                  fontSize: "15px",
+                  color: "#c20000",
+                }}
+              />
+            </IconButton>
           )}
         </Box>
       </Box>

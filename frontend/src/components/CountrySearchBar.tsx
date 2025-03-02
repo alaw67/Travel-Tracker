@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import countries from "../data/countries";
 import { Box, TextField, List, ListItemButton } from "@mui/material";
-import { UserState } from "../context/AuthContext";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 const AutocompleteSearchBar = ({
-  user,
   setVisitedCountries,
 }: {
-  user: UserState;
   setVisitedCountries: (countries: [string]) => void;
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
@@ -15,6 +13,7 @@ const AutocompleteSearchBar = ({
     useState<string[]>(countries);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [focused, setFocused] = useState<boolean>(false);
+  const { user } = useAuthContext();
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;

@@ -11,6 +11,7 @@ import OutlinedFlagIcon from "@mui/icons-material/OutlinedFlag";
 import FlagRoundedIcon from "@mui/icons-material/FlagRounded";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import PeopleIcon from "@mui/icons-material/People";
+import CountryPage from "./CountryPage";
 
 const Home = () => {
   const { user } = useAuthContext();
@@ -26,6 +27,7 @@ const Home = () => {
     useState<boolean>(false);
   const [userToRemove, setUserToRemove] = useState<string>("");
   const [countryToRemove, setCountryToRemove] = useState<string>("");
+  const [focusedCountry, setFocusedCountry] = useState<string>("");
   const [showCountriesList, setShowCountriesList] = useState<boolean>(true);
   const [me, setMe] = useState<any>({});
 
@@ -118,7 +120,7 @@ const Home = () => {
             marginTop: "10px",
             alignItems: "center",
           }}>
-          <Search user={user} setVisitedCountries={setVisitedCountries} />
+          <Search setVisitedCountries={setVisitedCountries} />
           <Box
             sx={{
               display: "inline-flex",
@@ -152,11 +154,14 @@ const Home = () => {
               position: "relative",
               gap: "10px",
             }}>
-            <WorldMap
-              visitedCountries={visitedCountries}
-              isMapOpen={isMapOpen}
-              setIsMapOpen={setIsMapOpen}
-            />
+            {isMapOpen ? (
+              <WorldMap visitedCountries={visitedCountries} />
+            ) : (
+              <CountryPage
+                countryName={focusedCountry}
+                setIsMapOpen={setIsMapOpen}
+              />
+            )}
             <Box sx={{ width: "20%" }}>
               {showCountriesList ? (
                 <CountriesList
@@ -164,7 +169,7 @@ const Home = () => {
                   setIsModalOpen={setIsCountriesModalOpen}
                   setCountryToRemove={setCountryToRemove}
                   setIsMapOpen={setIsMapOpen}
-                  user={user}
+                  setFocusedCountry={setFocusedCountry}
                 />
               ) : (
                 <FollowingList
