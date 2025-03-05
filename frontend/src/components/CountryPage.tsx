@@ -121,7 +121,17 @@ const CountryPage = ({
       <IconButton onClick={() => setIsMapOpen(true)} sx={{ float: "right" }}>
         <CloseIcon sx={{ color: "#6C6C6C" }} />
       </IconButton>
-      <Typography>{countryName}</Typography>
+      <Typography
+        sx={{
+          marginBottom: "10px",
+          marginTop: "25px",
+          marginLeft: "25px",
+          display: "flex",
+          justifyContent: "center",
+        }}
+        variant="h5">
+        {countryName}
+      </Typography>
       <Box display="flex" justifyContent="center" alignItems="center">
         <Grid
           container
