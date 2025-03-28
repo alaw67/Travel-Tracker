@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Slider, Box, Button } from "@mui/material";
+import { Box, Button, IconButton } from "@mui/material";
 import Cropper from "react-easy-crop";
 import { Point, Area } from "react-easy-crop/types";
+import CloseIcon from "@mui/icons-material/Close";
 
 const cropImage = async (
   imageSrc: string, // URL or Base64 image source
@@ -68,11 +69,13 @@ const CropTool = ({
   imageNum,
   user,
   countryName,
+  setCropModalOpen,
 }: {
   image: File;
   imageNum: number;
   user: any;
   countryName: string;
+  setCropModalOpen: (open: boolean) => void;
 }) => {
   const imageType = image.type;
   const imageName = image.name;
@@ -82,7 +85,6 @@ const CropTool = ({
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
   const onCropComplete = (croppedArea: Area, croppedAreaPixels: Area) => {
-    console.log(croppedArea, croppedAreaPixels);
     setCroppedAreaPixels(croppedAreaPixels);
   };
 
@@ -137,8 +139,9 @@ const CropTool = ({
       .then((croppedImage) => {
         console.log("Cropped Image URL:", croppedImage);
         handleFileUpload(croppedImage, imageNum);
+        setCropModalOpen(false);
       })
-      .catch((err) => console.error("Error cropping image:", err));
+      .catch((err) => alert("Error cropping image: " + err));
   };
 
   return (
@@ -158,14 +161,21 @@ const CropTool = ({
           onCropChange={setCrop}
           onCropComplete={onCropComplete}
         />
+        <Button
+          onClick={() => uploadCroppedImage()}
+          variant="contained"
+          color="primary"
+          classes="cropButton">
+          Upload
+        </Button>
       </Box>
-      <Button
-        onClick={() => uploadCroppedImage()}
-        variant="contained"
-        color="primary"
-        classes="cropButton">
-        Show Result
-      </Button>
+      <Box>
+        <IconButton
+          onClick={() => setCropModalOpen(false)}
+          sx={{ float: "right" }}>
+          <CloseIcon sx={{ color: "#6C6C6C" }} />
+        </IconButton>
+      </Box>
     </Box>
   );
 };

@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import WorldMap from "./WorldMap";
-import { Box, IconButton } from "@mui/material";
-import Search from "./CountrySearchBar";
+import { Box } from "@mui/material";
 import CountriesList from "./CountriesList";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { RemoveConfirmationModal } from "./RemoveConfirmationModal";
 import { FollowingList } from "./FollowingList";
 import { useNavigate } from "react-router-dom";
-import OutlinedFlagIcon from "@mui/icons-material/OutlinedFlag";
-import FlagRoundedIcon from "@mui/icons-material/FlagRounded";
-import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
-import PeopleIcon from "@mui/icons-material/People";
 import CountryPage from "./CountryPage";
+import ToolBar from "./Toolbar";
+import VisitPage from "./VisitPage";
 
 const Home = () => {
+  console.log("rendering home");
+
   const { user } = useAuthContext();
   const navigate = useNavigate();
 
@@ -28,8 +27,11 @@ const Home = () => {
   const [userToRemove, setUserToRemove] = useState<string>("");
   const [countryToRemove, setCountryToRemove] = useState<string>("");
   const [focusedCountry, setFocusedCountry] = useState<string>("");
-  const [showCountriesList, setShowCountriesList] = useState<boolean>(true);
+  const [listToShow, setListToShow] = useState<string>("countries");
   const [me, setMe] = useState<any>({});
+  const [visiting, setVisiting] = useState<boolean>(false);
+  const [userToVisit, setUserToVisit] = useState<any>({});
+  const [pageToRender, setPageToRender] = useState<string>("worldMap");
 
   console.log("user: ", user);
 
@@ -98,6 +100,24 @@ const Home = () => {
     }
   };
 
+  const renderPage = () => {
+    switch (pageToRender) {
+      case "worldMap":
+        return <WorldMap visitedCountries={visitedCountries} />;
+      case "visitPage":
+        return (
+          <VisitPage user={userToVisit} setPageToRender={setPageToRender} />
+        );
+      case "countryPage":
+        return (
+          <CountryPage
+            countryName={focusedCountry}
+            setPageToRender={setPageToRender}
+          />
+        );
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -113,33 +133,11 @@ const Home = () => {
           height: "inherit",
           flexDirection: "column",
         }}>
-        <Box
-          sx={{
-            display: "inline-flex",
-            flexDirection: "row",
-            marginTop: "10px",
-            alignItems: "center",
-          }}>
-          <Search setVisitedCountries={setVisitedCountries} />
-          <Box
-            sx={{
-              display: "inline-flex",
-              marginRight: "10px",
-            }}>
-            <IconButton
-              onClick={() => {
-                setShowCountriesList(!showCountriesList);
-              }}>
-              {showCountriesList ? <FlagRoundedIcon /> : <OutlinedFlagIcon />}
-            </IconButton>
-            <IconButton
-              onClick={() => {
-                setShowCountriesList(!showCountriesList);
-              }}>
-              {showCountriesList ? <PeopleOutlineIcon /> : <PeopleIcon />}
-            </IconButton>
-          </Box>
-        </Box>
+        <ToolBar
+          setVisitedCountries={setVisitedCountries}
+          setListToShow={setListToShow}
+          listToShow={listToShow}
+        />
         <Box
           sx={{
             display: "flex",
@@ -149,26 +147,18 @@ const Home = () => {
           }}>
           <Box
             sx={{
-              // alignItems: "stretch",
               display: "inline-flex",
               position: "relative",
               gap: "10px",
             }}>
-            {isMapOpen ? (
-              <WorldMap visitedCountries={visitedCountries} />
-            ) : (
-              <CountryPage
-                countryName={focusedCountry}
-                setIsMapOpen={setIsMapOpen}
-              />
-            )}
+            {renderPage()}
             <Box sx={{ width: "20%" }}>
-              {showCountriesList ? (
+              {listToShow === "countries" ? (
                 <CountriesList
                   visitedCountries={visitedCountries}
                   setIsModalOpen={setIsCountriesModalOpen}
                   setCountryToRemove={setCountryToRemove}
-                  setIsMapOpen={setIsMapOpen}
+                  setPageToRender={setPageToRender}
                   setFocusedCountry={setFocusedCountry}
                 />
               ) : (
@@ -176,6 +166,9 @@ const Home = () => {
                   following={me.following}
                   setUserToRemove={setUserToRemove}
                   userToken={user.token}
+                  setUserToVisit={setUserToVisit}
+                  setVisiting={setVisiting}
+                  setPageToRender={setPageToRender}
                 />
               )}
             </Box>

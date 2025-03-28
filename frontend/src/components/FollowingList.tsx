@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Avatar from "@mui/material/Avatar";
 import { useAuthContext } from "../hooks/useAuthContext";
@@ -8,26 +8,35 @@ type followedUser = {
   firstName: string;
   lastName: string;
   id: string;
+  visitedCountries: [string];
 };
 
 export const FollowingList = ({
   userToken,
   following,
   setUserToRemove,
+  setUserToVisit,
+  setVisiting,
+  setPageToRender,
 }: {
   userToken: string;
   following: [string];
   setUserToRemove: (friend: string) => void;
+  setUserToVisit: (user: any) => void;
+  setVisiting: (visiting: boolean) => void;
+  setPageToRender: (page: string) => void;
 }) => {
-  const [hoveredUser, setHoveredUser] = useState("");
-
+  console.log("rendering following list");
   const FollowingItem = ({ followedUserId }: { followedUserId: string }) => {
     const [followedUser, setFollowedUser] = useState<followedUser>({
       firstName: "",
       lastName: "",
       id: "",
+      visitedCountries: [""],
     });
+    const [deleteUserOption, setDeleteUserOption] = useState<boolean>(false);
     useEffect(() => {
+      console.log("rendering followed user");
       const getUser = async (userId: string) => {
         const response = await fetch(`api/users/user/${userId}`, {
           method: "GET",
@@ -47,7 +56,6 @@ export const FollowingList = ({
       };
 
       getUser(followedUserId);
-      console.log("FollowedUser", followedUser);
     }, [followedUserId]);
 
     return (
@@ -61,14 +69,23 @@ export const FollowingList = ({
           marginTop: "7px",
           borderRadius: "50px 15px 15px 50px",
           boxShadow: "0px 3px 5px 1px rgba(0, 0, 0, 0.2)",
+          cursor: "pointer",
+          "&:hover": {
+            backgroundColor: "#e6edf0",
+          },
         }}
-        // onMouseEnter={() => {
-        //   setHoveredUser(followedUser.id);
-        // }}
-        // onMouseLeave={() => {
-        //   setHoveredUser("");
-        // }}
-      >
+        onMouseEnter={() => {
+          setDeleteUserOption(true);
+        }}
+        onMouseLeave={() => {
+          setDeleteUserOption(false);
+        }}
+        onClick={() => {
+          console.log("followeduser", followedUser);
+          setPageToRender("visitPage");
+          setUserToVisit(followedUser);
+          setVisiting(true);
+        }}>
         <Avatar
           sx={{
             width: "40px",
@@ -89,13 +106,17 @@ export const FollowingList = ({
             setUserToRemove(followedUser.id);
           }}
           sx={{ marginLeft: "auto", marginRight: "10px" }}>
-          <CloseIcon
-            sx={{
-              cursor: "pointer",
-              fontSize: "15px",
-              color: "#c20000",
-            }}
-          />
+          {deleteUserOption && (
+            <IconButton>
+              <CloseIcon
+                sx={{
+                  cursor: "pointer",
+                  fontSize: "15px",
+                  color: "#c20000",
+                }}
+              />
+            </IconButton>
+          )}
         </Box>
       </Box>
     );

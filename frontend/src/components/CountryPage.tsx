@@ -28,10 +28,10 @@ const VisuallyHiddenInput = styled("input")({
 
 const CountryPage = ({
   countryName,
-  setIsMapOpen,
+  setPageToRender,
 }: {
   countryName: string;
-  setIsMapOpen: (isMapOpen: boolean) => void;
+  setPageToRender: (page: string) => void;
 }) => {
   const [cropModalOpen, setCropModalOpen] = useState<boolean>(false);
   const [imageToCrop, setImageToCrop] = useState<any>(null);
@@ -116,9 +116,12 @@ const CountryPage = ({
           imageNum={imageNum}
           user={user}
           countryName={countryName}
+          setCropModalOpen={setCropModalOpen}
         />
       </Modal>
-      <IconButton onClick={() => setIsMapOpen(true)} sx={{ float: "right" }}>
+      <IconButton
+        onClick={() => setPageToRender("worldMap")}
+        sx={{ float: "right" }}>
         <CloseIcon sx={{ color: "#6C6C6C" }} />
       </IconButton>
       <Typography

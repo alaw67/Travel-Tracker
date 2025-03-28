@@ -7,19 +7,19 @@ import CloseIcon from "@mui/icons-material/Close";
 const CountriesList = ({
   visitedCountries,
   setIsModalOpen,
-  setIsMapOpen,
+  setPageToRender,
   setCountryToRemove,
   setFocusedCountry,
 }: {
   visitedCountries: [string];
   setIsModalOpen: (isOpen: boolean) => void;
-  setIsMapOpen: (isOpen: boolean) => void;
+  setPageToRender: (page: string) => void;
   setCountryToRemove: (country: string) => void;
   setFocusedCountry: (country: string) => void;
 }) => {
-  const [hoveredCountry, setHoveredCountry] = useState("");
-
+  console.log("rendering countries list");
   const CountryItem = ({ countryName }: { countryName: string }) => {
+    const [deleteUserOption, setDeleteUserOption] = useState<boolean>(false);
     var countryCode: string =
       countryCodes[countryName as keyof typeof countryCodes];
     return (
@@ -39,14 +39,14 @@ const CountriesList = ({
           },
         }}
         onMouseEnter={() => {
-          setHoveredCountry(countryName);
+          setDeleteUserOption(true);
         }}
         onMouseLeave={() => {
-          setHoveredCountry("");
+          setDeleteUserOption(false);
         }}
         onClick={() => {
           setFocusedCountry(countryName);
-          setIsMapOpen(false);
+          setPageToRender("countryPage");
         }}>
         <CircleFlag countryCode={countryCode} height="40" />
         <Typography sx={{ marginLeft: "30px" }} variant="body1">
@@ -59,7 +59,7 @@ const CountriesList = ({
             e.stopPropagation();
           }}
           sx={{ marginLeft: "auto", marginRight: "10px" }}>
-          {hoveredCountry === countryName && (
+          {deleteUserOption && (
             <IconButton>
               <CloseIcon
                 sx={{

@@ -32,7 +32,6 @@ const AutocompleteSearchBar = ({
   };
 
   const handleSelectCountry = (country: string) => {
-    console.log("clicked!!!");
     setInputValue("");
     addVisitedCountry(country);
     setFilteredCountries(countries);
