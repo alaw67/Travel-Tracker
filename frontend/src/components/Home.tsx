@@ -6,9 +6,25 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import { RemoveConfirmationModal } from "./RemoveConfirmationModal";
 import { FollowingList } from "./FollowingList";
 import { useNavigate } from "react-router-dom";
+import { getFollowing } from "../utilities/getfollowing";
 import CountryPage from "./CountryPage";
 import ToolBar from "./Toolbar";
 import VisitPage from "./VisitPage";
+import { unfollowUser } from "../utilities/unfollow";
+import { removeCountry } from "../utilities/removeCountry";
+
+type FollowedUser = {
+  firstName: string;
+  lastName: string;
+  visitedCountries: [string];
+  _id: string;
+};
+
+type Follow = {
+  _id: string;
+  follower: string;
+  following: FollowedUser;
+};
 
 const Home = () => {
   console.log("rendering home");
@@ -21,38 +37,49 @@ const Home = () => {
   }
 
   const [visitedCountries, setVisitedCountries] = useState<[string]>([""]);
-  const [isMapOpen, setIsMapOpen] = useState<boolean>(true);
-  const [isCountriesModalOpen, setIsCountriesModalOpen] =
-    useState<boolean>(false);
+  const [isRemovingCountry, setIsRemovingCountry] = useState<boolean>(false);
+  const [isUnfollowingUser, setIsUnfollowingUser] = useState<boolean>(false);
   const [userToRemove, setUserToRemove] = useState<string>("");
   const [countryToRemove, setCountryToRemove] = useState<string>("");
   const [focusedCountry, setFocusedCountry] = useState<string>("");
   const [listToShow, setListToShow] = useState<string>("countries");
-  const [me, setMe] = useState<any>({});
-  const [visiting, setVisiting] = useState<boolean>(false);
   const [userToVisit, setUserToVisit] = useState<any>({});
   const [pageToRender, setPageToRender] = useState<string>("worldMap");
+  const [followingUsers, setFollowingUsers] = useState<Follow[]>([]);
 
   console.log("user: ", user);
 
-  useEffect(() => {
-    const getMe = async () => {
-      const response = await fetch("/api/users/me", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
+  const fetchFollowing = async () => {
+    console.log("fetching following");
+    try {
+      const res = await getFollowing(user.id, user.token);
+      console.log("res:", res);
+      setFollowingUsers(res);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-      if (!response.ok) {
-        console.log("failed to get your user details");
-      } else {
-        const myUser = await response.json();
-        console.log("myUser", myUser);
-        setMe(myUser);
-      }
-    };
+  const removeVisitedCountry = async () => {
+    try {
+      const res = await removeCountry(user.token, countryToRemove);
+      console.log("visited countries res: ", res);
+      setVisitedCountries(res.visitedCountries);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const unfollow = async () => {
+    try {
+      await unfollowUser(user.id, userToRemove, user.token);
+      fetchFollowing();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
     const getVisitedCountries = async () => {
       const countriesResponse = await fetch("/api/users/countries", {
         method: "GET",
@@ -65,7 +92,8 @@ const Home = () => {
       console.log("response: ", countriesResponse);
 
       if (!countriesResponse.ok) {
-        console.log("response failed");
+        console.log("response to get countries failed");
+        navigate("/login");
       } else {
         const countries = await countriesResponse.json();
         console.log("countries: ", countries);
@@ -75,38 +103,25 @@ const Home = () => {
     console.log("token: ", user?.token);
     if (user?.token) {
       getVisitedCountries();
-      getMe();
+      fetchFollowing();
     }
   }, [user]);
-
-  const removeVisitedCountry = async (country: string): Promise<any> => {
-    const response = await fetch("/api/users/countries/delete", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.token}`,
-      },
-      body: JSON.stringify({ country: country }),
-    });
-
-    console.log("response: ", response);
-
-    if (!response.ok) {
-      console.log("response failed");
-    } else {
-      const countries = await response.json();
-      console.log("countries: ", countries);
-      setVisitedCountries(countries.visitedCountries);
-    }
-  };
 
   const renderPage = () => {
     switch (pageToRender) {
       case "worldMap":
-        return <WorldMap visitedCountries={visitedCountries} />;
+        return (
+          <Box sx={{ width: "100%" }}>
+            <WorldMap visitedCountries={visitedCountries} height={"90vh"} />
+          </Box>
+        );
       case "visitPage":
         return (
-          <VisitPage user={userToVisit} setPageToRender={setPageToRender} />
+          <VisitPage
+            visitingUser={userToVisit}
+            setPageToRender={setPageToRender}
+            fetchFollowing={fetchFollowing}
+          />
         );
       case "countryPage":
         return (
@@ -137,6 +152,8 @@ const Home = () => {
           setVisitedCountries={setVisitedCountries}
           setListToShow={setListToShow}
           listToShow={listToShow}
+          setUserToVisit={setUserToVisit}
+          setPageToRender={setPageToRender}
         />
         <Box
           sx={{
@@ -156,30 +173,36 @@ const Home = () => {
               {listToShow === "countries" ? (
                 <CountriesList
                   visitedCountries={visitedCountries}
-                  setIsModalOpen={setIsCountriesModalOpen}
+                  setIsModalOpen={setIsRemovingCountry}
                   setCountryToRemove={setCountryToRemove}
                   setPageToRender={setPageToRender}
                   setFocusedCountry={setFocusedCountry}
                 />
               ) : (
                 <FollowingList
-                  following={me.following}
                   setUserToRemove={setUserToRemove}
-                  userToken={user.token}
                   setUserToVisit={setUserToVisit}
-                  setVisiting={setVisiting}
                   setPageToRender={setPageToRender}
+                  followingUsers={followingUsers}
+                  setIsUnfollowingUser={setIsUnfollowingUser}
                 />
               )}
             </Box>
           </Box>
         </Box>
       </Box>
-      {isCountriesModalOpen && (
+      {isRemovingCountry && (
         <RemoveConfirmationModal
           item={countryToRemove}
           remove={removeVisitedCountry}
-          setIsModalOpen={setIsCountriesModalOpen}
+          setIsModalOpen={setIsRemovingCountry}
+        />
+      )}
+      {isUnfollowingUser && (
+        <RemoveConfirmationModal
+          item={userToRemove}
+          remove={unfollow}
+          setIsModalOpen={setIsUnfollowingUser}
         />
       )}
     </Box>

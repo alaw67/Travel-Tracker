@@ -6,7 +6,7 @@ export const RemoveConfirmationModal = ({
   setIsModalOpen,
   item,
 }: {
-  remove: (item: string) => void;
+  remove: () => Promise<void>;
   setIsModalOpen: (isModalOpen: boolean) => void;
   item: string;
 }) => {
@@ -19,7 +19,7 @@ export const RemoveConfirmationModal = ({
           marginBottom: "15px",
         }}
         variant="h6">
-        {`Are you sure you want to remove ${item} from your visited countries?`}
+        {`Are you sure you want to remove ${item}?`}
       </Typography>
       <Box
         sx={{
@@ -35,7 +35,7 @@ export const RemoveConfirmationModal = ({
             "&:hover": { backgroundColor: "#cf3227" },
           }}
           onClick={() => {
-            remove(item);
+            remove();
             setIsModalOpen(false);
           }}>
           Remove

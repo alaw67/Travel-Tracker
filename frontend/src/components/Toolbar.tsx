@@ -1,5 +1,6 @@
 import { Box, IconButton } from "@mui/material";
-import Search from "./CountrySearchBar";
+import CountrySearchBar from "./CountrySearchBar";
+import UserSearchBar from "./UserSearchBar";
 import OutlinedFlagIcon from "@mui/icons-material/OutlinedFlag";
 import FlagRoundedIcon from "@mui/icons-material/FlagRounded";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
@@ -9,10 +10,14 @@ const Toolbar = ({
   setVisitedCountries,
   setListToShow,
   listToShow,
+  setUserToVisit,
+  setPageToRender,
 }: {
   setVisitedCountries: (countries: [string]) => void;
   setListToShow: (value: string) => void;
   listToShow: string;
+  setUserToVisit: (user: any) => void;
+  setPageToRender: (page: string) => void;
 }) => {
   return (
     <Box
@@ -22,7 +27,14 @@ const Toolbar = ({
         marginTop: "10px",
         alignItems: "center",
       }}>
-      <Search setVisitedCountries={setVisitedCountries} />
+      {listToShow === "countries" ? (
+        <CountrySearchBar setVisitedCountries={setVisitedCountries} />
+      ) : (
+        <UserSearchBar
+          setUserToVisit={setUserToVisit}
+          setPageToRender={setPageToRender}
+        />
+      )}
       <Box
         sx={{
           display: "inline-flex",

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import countries from "../data/countries";
-import { Box, TextField, List, ListItemButton } from "@mui/material";
+import { Box, TextField, List, ListItemButton, Paper } from "@mui/material";
 import { useAuthContext } from "../hooks/useAuthContext";
 
-const AutocompleteSearchBar = ({
+const CountrySearchBar = ({
   setVisitedCountries,
 }: {
   setVisitedCountries: (countries: [string]) => void;
@@ -85,29 +85,27 @@ const AutocompleteSearchBar = ({
         placeholder="Search for a country to add..."
       />
       {showDropdown && (
-        <List
-          sx={{
-            position: "absolute",
-            backgroundColor: "white",
-            boxShadow: "0px 8px 6px -6px rgba(0, 0, 0, 0.1)",
-            borderRadius: "4px",
-            width: "400px",
-            zIndex: "100",
-          }}>
-          {filteredCountries.slice(0, 7).map((country) => (
-            <ListItemButton
-              key={country}
-              onMouseOver={() => {
-                console.log("hell0");
-              }}
-              onMouseDown={() => handleSelectCountry(country)}>
-              {country}
-            </ListItemButton>
-          ))}
-        </List>
+        <Paper style={{ position: "absolute", zIndex: 1000 }}>
+          <List
+            sx={{
+              borderRadius: "4px",
+              width: "400px",
+            }}>
+            {filteredCountries.slice(0, 7).map((country) => (
+              <ListItemButton
+                key={country}
+                onMouseOver={() => {
+                  console.log("hell0");
+                }}
+                onMouseDown={() => handleSelectCountry(country)}>
+                {country}
+              </ListItemButton>
+            ))}
+          </List>
+        </Paper>
       )}
     </Box>
   );
 };
 
-export default AutocompleteSearchBar;
+export default CountrySearchBar;

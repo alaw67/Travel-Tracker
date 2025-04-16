@@ -19,6 +19,7 @@
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
     "bootstrap": "^5.2.3",
+    "lodash.debounce": "^4.0.8",
     "mdb-react-ui-kit": "^6.0.0",
     "react": "^18.3.1",
     "react-circle-flags": "^0.0.19",
@@ -55,6 +56,7 @@
     ]
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@types/react-simple-maps": "^3.0.0",
     "http-proxy-middleware": "^2.0.6"
   }

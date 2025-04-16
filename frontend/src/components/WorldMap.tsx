@@ -5,7 +5,13 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import geoData from "../data/geoData.json";
 
-const WorldMap = ({ visitedCountries }: { visitedCountries: [string] }) => {
+const WorldMap = ({
+  visitedCountries,
+  height,
+}: {
+  visitedCountries: [string];
+  height: string;
+}) => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
   const handleCountryClick = (country: string) => {
@@ -24,17 +30,17 @@ const WorldMap = ({ visitedCountries }: { visitedCountries: [string] }) => {
     <ComposableMap
       projection="geoEqualEarth"
       projectionConfig={{
-        rotate: [-20, 0, 0],
-        scale: 160,
+        rotate: [-9, 0, 0],
+        // scale: 160,
+        center: [12, 0],
       }}
       style={{
-        width: "80%",
-        height: "90vh",
         backgroundColor: "#f2f5f7",
         borderRadius: "10px",
+        height: height,
+        width: "100%",
         // paddingTop: "15px",
-        border: "1px solid #d8dfe3",
-        marginBottom: "10px",
+        // border: "1px solid #d8dfe3",
       }}>
       <Geographies geography={geoData}>
         {({ geographies }) =>

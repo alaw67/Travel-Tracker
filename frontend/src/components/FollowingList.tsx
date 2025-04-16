@@ -1,62 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box, Typography, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Avatar from "@mui/material/Avatar";
-import { useAuthContext } from "../hooks/useAuthContext";
 
-type followedUser = {
+type FollowedUser = {
   firstName: string;
   lastName: string;
-  id: string;
   visitedCountries: [string];
+  _id: string;
+};
+
+type Follow = {
+  _id: string;
+  follower: string;
+  following: FollowedUser;
 };
 
 export const FollowingList = ({
-  userToken,
-  following,
   setUserToRemove,
   setUserToVisit,
-  setVisiting,
   setPageToRender,
+  followingUsers,
+  setIsUnfollowingUser,
 }: {
-  userToken: string;
-  following: [string];
   setUserToRemove: (friend: string) => void;
   setUserToVisit: (user: any) => void;
-  setVisiting: (visiting: boolean) => void;
   setPageToRender: (page: string) => void;
+  followingUsers: Follow[];
+  setIsUnfollowingUser: (unfollowing: boolean) => void;
 }) => {
   console.log("rendering following list");
-  const FollowingItem = ({ followedUserId }: { followedUserId: string }) => {
-    const [followedUser, setFollowedUser] = useState<followedUser>({
-      firstName: "",
-      lastName: "",
-      id: "",
-      visitedCountries: [""],
-    });
+
+  const FollowingItem = ({ user }: { user: FollowedUser }) => {
     const [deleteUserOption, setDeleteUserOption] = useState<boolean>(false);
-    useEffect(() => {
-      console.log("rendering followed user");
-      const getUser = async (userId: string) => {
-        const response = await fetch(`api/users/user/${userId}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (!response.ok) {
-          console.log("response failed");
-        }
-
-        const user = await response.json();
-        console.log("USER:", user);
-        setFollowedUser(user);
-      };
-
-      getUser(followedUserId);
-    }, [followedUserId]);
 
     return (
       <Box
@@ -81,29 +57,25 @@ export const FollowingList = ({
           setDeleteUserOption(false);
         }}
         onClick={() => {
-          console.log("followeduser", followedUser);
+          console.log("followeduser", user._id);
           setPageToRender("visitPage");
-          setUserToVisit(followedUser);
-          setVisiting(true);
+          setUserToVisit(user);
         }}>
         <Avatar
           sx={{
             width: "40px",
             height: "40px",
           }}
-          alt={
-            followedUser
-              ? `${followedUser.firstName} ${followedUser.lastName}`
-              : ""
-          }
+          alt={user ? `${user.firstName} ${user.lastName}` : ""}
           // src="/static/images/avatar/1.jpg"
         />
         <Typography sx={{ marginLeft: "30px" }} variant="body1">
-          {`${followedUser.firstName} ${followedUser.lastName}`}
+          {`${user.firstName} ${user.lastName}`}
         </Typography>
         <Box
           onClick={() => {
-            setUserToRemove(followedUser.id);
+            setUserToRemove(user._id);
+            setIsUnfollowingUser(true);
           }}
           sx={{ marginLeft: "auto", marginRight: "10px" }}>
           {deleteUserOption && (
@@ -145,8 +117,8 @@ export const FollowingList = ({
           paddingBottom: "20px",
           overflowY: "scroll",
         }}>
-        {following.map((followId, i) => {
-          return <FollowingItem key={i} followedUserId={followId} />;
+        {followingUsers.map((follow, i) => {
+          return <FollowingItem key={i} user={follow.following} />;
         })}
       </Box>
     </Box>

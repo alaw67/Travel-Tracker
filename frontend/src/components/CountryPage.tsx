@@ -102,12 +102,12 @@ const CountryPage = ({
   return (
     <Box
       sx={{
-        width: "80%",
+        width: "100%",
         height: "90vh",
         backgroundColor: "#f2f5f7",
         borderRadius: "10px",
         // paddingTop: "15px",
-        border: "1px solid #d8dfe3",
+        // border: "1px solid #d8dfe3",
         marginBottom: "10px",
       }}>
       <Modal open={cropModalOpen}>

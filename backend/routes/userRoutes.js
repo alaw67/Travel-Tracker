@@ -12,8 +12,12 @@ import {
 } from "../controllers/countriesController.js";
 
 import {
+  followUser,
+  unfollowUser,
+  isFollowing,
   getFollowing,
-  addFollowing,
+  getFollowers,
+  getSearchedFollowing,
 } from "../controllers/followingController.js";
 
 import {
@@ -28,11 +32,15 @@ router.post("/signup", registerUser);
 router.post("/login", loginUser);
 router.patch("/countries", protect, addVisitedCountry);
 router.patch("/countries/delete", protect, removeVisitedCountry);
-router.patch("/following", protect, addFollowing);
 router.get("/me", protect, getMe);
 router.get("/user/:id", protect, getUser);
 router.get("/countries", protect, getVisitedCountries);
-router.get("/following", protect, getFollowing);
+router.post("/following/follow", protect, followUser);
+router.post("/following/unfollow", protect, unfollowUser);
+router.get("/following", protect, isFollowing);
+router.get("/following/followers", protect, getFollowers);
+router.get("/following/following", protect, getFollowing);
+router.get("/following/search", protect, getSearchedFollowing);
 router.get("/s3_put_presigned_url", protect, getPutPresignedS3URL);
 router.get("/s3_get_presigned_url", protect, getGetPresignedS3URL);
 

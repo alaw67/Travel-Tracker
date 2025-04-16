@@ -96,12 +96,13 @@ const getMe = asyncHandler(async (req, res) => {
 const getUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id);
   console.log("user: ", user);
-  const { firstName, lastName, id } = user;
+  const { firstName, lastName, id, visitedCountries } = user;
   if (user) {
     res.status(200).json({
       firstName,
       lastName,
       id,
+      visitedCountries,
     });
   } else {
     res.status(400);
