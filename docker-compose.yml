@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  # Frontend service (React app)
+  frontend:
+    build:
+      context: ./frontend # Points to your frontend folder where Dockerfile is
+    ports:
+      - "3000:3000" # Expose the frontend on port 3000 of your machine
+    volumes:
+      - ./frontend:/app # Mount the frontend folder into the container
+    depends_on:
+      - backend # Ensures backend is started before frontend
+    environment:
+      - .env # API URL for frontend to communicate with backend
+    networks:
+      - app-network
+
+  # Backend service (Node.js, Express, MongoDB, etc.)
+  backend:
+    build:
+      context: ./backend # Points to your backend folder where Dockerfile is
+    ports:
+      - "8000:8000" # Expose backend API on port 8000
+    environment:
+      - .env # env variables
+    depends_on:
+      - mongo # Ensures the backend starts after Mongo is up
+    networks:
+      - app-network
+
+  # MongoDB service (official Mongo image)
+  mongo:
+    image: mongo:latest # Use official MongoDB image
+    container_name: mongo # Give a name to the container for easy reference
+    ports:
+      - "27017:27017" # Expose MongoDB on default port 27017 (for dev)
+    environment:
+      - .env
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge # Default network mode; allows containers to communicate
