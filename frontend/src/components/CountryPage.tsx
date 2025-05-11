@@ -36,44 +36,77 @@ const CountryPage = ({
   const [cropModalOpen, setCropModalOpen] = useState<boolean>(false);
   const [imageToCrop, setImageToCrop] = useState<any>(null);
   const [imageNum, setImageNum] = useState<number>(0);
-  const { user } = useAuthContext();
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
-  const photoNums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const { user, loading } = useAuthContext();
 
-  const handleFileRetrieval = async (imageNum: number) => {
-    try {
-      const response = await fetch(
-        `/api/users/s3_get_presigned_url?key=${user.id}/${countryName}/${imageNum}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
+  const imageNums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+  console.log("countryName: ", countryName);
+
+  useEffect(() => {
+    const handleFileRetrieval = async (keys: string[]) => {
+      console.log("fetching images");
+      const params = new URLSearchParams();
+
+      keys.forEach((key) => params.append("key", key));
+      try {
+        const response = await fetch(
+          `/api/users/s3_get_presigned_url?${params.toString()}"`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+
+        const { getUrls } = await response.json(); // This is the S3 upload URL
+        console.log("getUrls: ", getUrls);
+        setImageUrls(getUrls);
+      } catch (error) {
+        console.error("Error getting file:", error);
+      }
+    };
+    if (user && !loading) {
+      const keys = imageNums.map(
+        (imageNum) => `${user.id}/${countryName}/${imageNum}`
       );
-
-      const { getUrl } = await response.json(); // This is the S3 upload URL
-      return getUrl;
-    } catch (error) {
-      console.error("Error getting file:", error);
+      console.log("keys:", keys);
+      handleFileRetrieval(keys);
     }
-  };
+  }, [user, countryName]);
+
+  useEffect(() => {
+    if (imageUrls.length === 0) return;
+
+    let loadedCount = 0;
+
+    const handleImageLoad = () => {
+      loadedCount++;
+      if (loadedCount === imageUrls.length) {
+        setAllImagesLoaded(true);
+      }
+    };
+
+    imageUrls.forEach((url) => {
+      console.log("url:", url);
+      if (!url) {
+        handleImageLoad();
+      } else {
+        const img = new Image();
+        img.src = url;
+        img.onload = handleImageLoad;
+        img.onerror = handleImageLoad; // Still count it to prevent hanging
+      }
+    });
+  }, [imageUrls]);
 
   const Cell = ({ imageNum }: { imageNum: number }) => {
-    const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-    useEffect(() => {
-      const fetchImage = async () => {
-        const url = await handleFileRetrieval(imageNum);
-        setImageUrl(url);
-      };
-
-      fetchImage();
-    }, [imageNum]);
-
-    return imageUrl ? (
+    return imageUrls[imageNum - 1] ? (
       <img
-        src={imageUrl}
+        src={imageUrls[imageNum - 1]}
         alt={`${imageNum}`}
         style={{ maxWidth: "100%", maxHeight: "400px", objectFit: "contain" }}
       />
@@ -102,7 +135,7 @@ const CountryPage = ({
   return (
     <Box
       sx={{
-        width: "100%",
+        // width: "85%",
         height: "90vh",
         backgroundColor: "#f2f5f7",
         borderRadius: "10px",
@@ -119,50 +152,44 @@ const CountryPage = ({
           setCropModalOpen={setCropModalOpen}
         />
       </Modal>
-      <IconButton
-        onClick={() => setPageToRender("worldMap")}
-        sx={{ float: "right" }}>
-        <CloseIcon sx={{ color: "#6C6C6C" }} />
-      </IconButton>
       <Typography
         sx={{
           marginBottom: "10px",
           marginTop: "25px",
-          marginLeft: "25px",
           display: "flex",
           justifyContent: "center",
         }}
         variant="h5">
         {countryName}
       </Typography>
-      <Box display="flex" justifyContent="center" alignItems="center">
-        <Grid
-          container
-          spacing={1} // Adds gaps between grid items
-          sx={{ width: "65%", maxWidth: "500px" }}>
-          {photoNums.map((num) => (
-            <Grid
-              item
-              xs={4}
-              key={num}
-              sx={{ display: "flex", justifyContent: "center" }}>
-              <Paper
-                elevation={3}
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  aspectRatio: "1 / 1", // Ensures square shape
-                  width: "100%", // Adjust width to prevent overlap
-                  height: "100%",
-                  // padding: 2,
-                }}>
-                <Cell imageNum={num} />
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+
+      {allImagesLoaded && (
+        <Box display="flex" justifyContent="center" alignItems="center">
+          <Grid container spacing={1} sx={{ width: "65vh", maxWidth: "500px" }}>
+            {imageNums.map((num) => (
+              <Grid
+                item
+                xs={4}
+                key={num}
+                sx={{ display: "flex", justifyContent: "center" }}>
+                <Paper
+                  elevation={3}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    aspectRatio: "1 / 1", // Ensures square shape
+                    width: "100%", // Adjust width to prevent overlap
+                    height: "100%",
+                    // padding: 2,
+                  }}>
+                  <Cell imageNum={num} />
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      )}
     </Box>
   );
 };

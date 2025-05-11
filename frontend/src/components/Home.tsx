@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import WorldMap from "./WorldMap";
+import React, { useState, useEffect, useCallback } from "react";
 import { Box } from "@mui/material";
 import CountriesList from "./CountriesList";
 import { useAuthContext } from "../hooks/useAuthContext";
@@ -9,14 +8,17 @@ import { useNavigate } from "react-router-dom";
 import { getFollowing } from "../utilities/getfollowing";
 import CountryPage from "./CountryPage";
 import ToolBar from "./Toolbar";
-import VisitPage from "./VisitPage";
+import ProfileBanner from "./ProfileBanner";
+import PageWrapper from "./PageWrapper";
+import WorldMap from "./WorldMap";
 import { unfollowUser } from "../utilities/unfollow";
+import { followUser } from "../utilities/follow";
 import { removeCountry } from "../utilities/removeCountry";
 
 type FollowedUser = {
   firstName: string;
   lastName: string;
-  visitedCountries: [string];
+  visitedCountries: string[];
   _id: string;
 };
 
@@ -29,12 +31,8 @@ type Follow = {
 const Home = () => {
   console.log("rendering home");
 
-  const { user } = useAuthContext();
+  const { user, loading } = useAuthContext();
   const navigate = useNavigate();
-
-  if (!user) {
-    navigate("/login");
-  }
 
   const [visitedCountries, setVisitedCountries] = useState<[string]>([""]);
   const [isRemovingCountry, setIsRemovingCountry] = useState<boolean>(false);
@@ -43,14 +41,15 @@ const Home = () => {
   const [countryToRemove, setCountryToRemove] = useState<string>("");
   const [focusedCountry, setFocusedCountry] = useState<string>("");
   const [listToShow, setListToShow] = useState<string>("countries");
-  const [userToVisit, setUserToVisit] = useState<any>({});
-  const [pageToRender, setPageToRender] = useState<string>("worldMap");
+  const [curVisitingUser, setCurVisitingUser] = useState<any>({});
+  const [pageToRender, setPageToRender] = useState<string>("visitPage");
   const [followingUsers, setFollowingUsers] = useState<Follow[]>([]);
 
-  console.log("user: ", user);
+  const [isFollowingUser, setIsFollowingUser] = useState<boolean | null>(null);
 
-  const fetchFollowing = async () => {
+  const fetchFollowing = useCallback(async () => {
     console.log("fetching following");
+    console.log("userrr", user);
     try {
       const res = await getFollowing(user.id, user.token);
       console.log("res:", res);
@@ -58,6 +57,16 @@ const Home = () => {
     } catch (err) {
       console.error(err);
     }
+  }, [user]);
+
+  const followUnfollow = async () => {
+    if (isFollowingUser) {
+      await unfollowUser(user.id, curVisitingUser._id, user.token);
+    } else {
+      await followUser(user.id, curVisitingUser._id, user.token);
+    }
+    setIsFollowingUser(!isFollowingUser);
+    fetchFollowing();
   };
 
   const removeVisitedCountry = async () => {
@@ -79,7 +88,52 @@ const Home = () => {
     }
   };
 
+  const renderPage = () => {
+    switch (pageToRender) {
+      case "visitPage":
+        return <WorldMap visitingUser={curVisitingUser} />;
+      case "countryPage":
+        return (
+          <CountryPage
+            countryName={focusedCountry}
+            setPageToRender={setPageToRender}
+          />
+        );
+    }
+  };
+
   useEffect(() => {
+    const setIsFollowing = async () => {
+      const response = await fetch(
+        `/api/users/following?followerId=${user.id}&followingId=${curVisitingUser._id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.log("Failed to get isFollowing data");
+      } else {
+        const isFollowing = await response.json();
+        console.log("isFollowing", isFollowing);
+        setIsFollowingUser(isFollowing);
+      }
+    };
+    if (!loading && user) {
+      setIsFollowing();
+    }
+  }, [curVisitingUser, user]);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/login");
+    }
+    console.log("user: ", user);
+
     const getVisitedCountries = async () => {
       const countriesResponse = await fetch("/api/users/countries", {
         method: "GET",
@@ -100,38 +154,13 @@ const Home = () => {
         setVisitedCountries(countries.visitedCountries);
       }
     };
-    console.log("token: ", user?.token);
-    if (user?.token) {
+    if (!loading && user) {
+      console.log("fetch following with user:", user);
+      setCurVisitingUser(user);
       getVisitedCountries();
       fetchFollowing();
     }
   }, [user]);
-
-  const renderPage = () => {
-    switch (pageToRender) {
-      case "worldMap":
-        return (
-          <Box sx={{ width: "100%" }}>
-            <WorldMap visitedCountries={visitedCountries} height={"90vh"} />
-          </Box>
-        );
-      case "visitPage":
-        return (
-          <VisitPage
-            visitingUser={userToVisit}
-            setPageToRender={setPageToRender}
-            fetchFollowing={fetchFollowing}
-          />
-        );
-      case "countryPage":
-        return (
-          <CountryPage
-            countryName={focusedCountry}
-            setPageToRender={setPageToRender}
-          />
-        );
-    }
-  };
 
   return (
     <Box
@@ -152,7 +181,7 @@ const Home = () => {
           setVisitedCountries={setVisitedCountries}
           setListToShow={setListToShow}
           listToShow={listToShow}
-          setUserToVisit={setUserToVisit}
+          setCurVisitingUser={setCurVisitingUser}
           setPageToRender={setPageToRender}
         />
         <Box
@@ -168,8 +197,20 @@ const Home = () => {
               position: "relative",
               gap: "10px",
             }}>
-            {renderPage()}
-            <Box sx={{ width: "20%" }}>
+            <PageWrapper>
+              {isFollowingUser !== null && (
+                <ProfileBanner
+                  visitingUser={curVisitingUser}
+                  setCurVisitingUser={setCurVisitingUser}
+                  setPageToRender={setPageToRender}
+                  renderedPage={pageToRender}
+                  handleFollowUnfollow={followUnfollow}
+                  isFollowingUser={isFollowingUser}
+                />
+              )}
+              {renderPage()}
+            </PageWrapper>
+            <Box sx={{ width: "15%" }}>
               {listToShow === "countries" ? (
                 <CountriesList
                   visitedCountries={visitedCountries}
@@ -181,7 +222,7 @@ const Home = () => {
               ) : (
                 <FollowingList
                   setUserToRemove={setUserToRemove}
-                  setUserToVisit={setUserToVisit}
+                  setCurVisitingUser={setCurVisitingUser}
                   setPageToRender={setPageToRender}
                   followingUsers={followingUsers}
                   setIsUnfollowingUser={setIsUnfollowingUser}
