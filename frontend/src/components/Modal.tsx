@@ -17,6 +17,7 @@ export const Modal = ({ children }: { children: any }) => {
         sx={{
           display: "flex",
           alignItems: "center",
+          justifyContent: "center",
           width: "500px",
           height: "200px",
           backgroundColor: "white",

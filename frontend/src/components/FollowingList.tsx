@@ -6,7 +6,7 @@ import Avatar from "@mui/material/Avatar";
 type FollowedUser = {
   firstName: string;
   lastName: string;
-  visitedCountries: [string];
+  visitedCountries: string[];
   _id: string;
 };
 
@@ -18,13 +18,13 @@ type Follow = {
 
 export const FollowingList = ({
   setUserToRemove,
-  setUserToVisit,
+  setCurVisitingUser,
   setPageToRender,
   followingUsers,
   setIsUnfollowingUser,
 }: {
   setUserToRemove: (friend: string) => void;
-  setUserToVisit: (user: any) => void;
+  setCurVisitingUser: (user: any) => void;
   setPageToRender: (page: string) => void;
   followingUsers: Follow[];
   setIsUnfollowingUser: (unfollowing: boolean) => void;
@@ -59,7 +59,7 @@ export const FollowingList = ({
         onClick={() => {
           console.log("followeduser", user._id);
           setPageToRender("visitPage");
-          setUserToVisit(user);
+          setCurVisitingUser(user);
         }}>
         <Avatar
           sx={{
@@ -74,7 +74,7 @@ export const FollowingList = ({
         </Typography>
         <Box
           onClick={() => {
-            setUserToRemove(user._id);
+            setUserToRemove(`${user.firstName} ${user.lastName}`);
             setIsUnfollowingUser(true);
           }}
           sx={{ marginLeft: "auto", marginRight: "10px" }}>

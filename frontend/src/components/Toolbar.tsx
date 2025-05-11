@@ -10,13 +10,13 @@ const Toolbar = ({
   setVisitedCountries,
   setListToShow,
   listToShow,
-  setUserToVisit,
+  setCurVisitingUser,
   setPageToRender,
 }: {
   setVisitedCountries: (countries: [string]) => void;
   setListToShow: (value: string) => void;
   listToShow: string;
-  setUserToVisit: (user: any) => void;
+  setCurVisitingUser: (user: any) => void;
   setPageToRender: (page: string) => void;
 }) => {
   return (
@@ -31,7 +31,7 @@ const Toolbar = ({
         <CountrySearchBar setVisitedCountries={setVisitedCountries} />
       ) : (
         <UserSearchBar
-          setUserToVisit={setUserToVisit}
+          setCurVisitingUser={setCurVisitingUser}
           setPageToRender={setPageToRender}
         />
       )}

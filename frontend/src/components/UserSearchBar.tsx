@@ -16,10 +16,10 @@ interface User {
 }
 
 const UserSearchBar = ({
-  setUserToVisit,
+  setCurVisitingUser,
   setPageToRender,
 }: {
-  setUserToVisit: (user: any) => void;
+  setCurVisitingUser: (user: any) => void;
   setPageToRender: (page: string) => void;
 }) => {
   const [results, setResults] = useState<User[]>([]);
@@ -96,7 +96,7 @@ const UserSearchBar = ({
                 <ListItemButton
                   key={index}
                   onMouseDown={() => {
-                    setUserToVisit(user);
+                    setCurVisitingUser(user);
                     setPageToRender("visitPage");
                   }}>
                   <ListItemText
