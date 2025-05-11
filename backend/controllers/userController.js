@@ -18,6 +18,7 @@ const loginUser = asyncHandler(async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      visitedCountries: user.visitedCountries,
       following: [],
       followers: [],
       token: generateToken(user.id),
@@ -90,6 +91,7 @@ const getMe = asyncHandler(async (req, res) => {
     email,
     following,
     followers,
+    visitedCountries,
   });
 });
 
