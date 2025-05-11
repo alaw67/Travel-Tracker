@@ -12,6 +12,10 @@ const getPutPresignedS3URL = asyncHandler(async (req, res) => {
   console.log("here");
   const s3 = new S3Client({
     region: "ca-central-1",
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
   });
   const { key, fileType } = req.query;
 
@@ -39,29 +43,41 @@ const getPutPresignedS3URL = asyncHandler(async (req, res) => {
 const getGetPresignedS3URL = asyncHandler(async (req, res) => {
   const s3 = new S3Client({
     region: "ca-central-1",
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
   });
-  const { key } = req.query;
-  try {
-    await s3.send(
-      new HeadObjectCommand({
-        Bucket: `imagebucket-${process.env.AWS_ACCOUNT_ID}`,
-        Key: key,
-      })
-    );
-    const command = new GetObjectCommand({
-      Bucket: `imagebucket-${process.env.AWS_ACCOUNT_ID}`,
-      Key: key,
-    });
-    const getUrl = await getSignedUrl(s3, command, { expiresIn: 600 }); // URL valid for 10 min
-    console.log("getUrl", getUrl);
-    res.json({ getUrl });
-  } catch (error) {
-    if (error.name === "NotFound") {
-      console.log("File does not exist!", key);
-      res.json({ getUrl: "" }); // Return null if the file is missing
-    }
-    throw error; // Handle other errors
-  }
+  const keys = req.query.key;
+  const keyArray = Array.isArray(keys) ? keys : [keys];
+
+  console.log("keyArray:", keyArray);
+
+  const urls = await Promise.all(
+    keyArray.map(async (key) => {
+      try {
+        await s3.send(
+          new HeadObjectCommand({
+            Bucket: `imagebucket-${process.env.AWS_ACCOUNT_ID}`,
+            Key: key,
+          })
+        );
+
+        const command = new GetObjectCommand({
+          Bucket: `imagebucket-${process.env.AWS_ACCOUNT_ID}`,
+          Key: key,
+        });
+        return await getSignedUrl(s3, command, { expiresIn: 600 });
+      } catch (error) {
+        if (error.name === "NotFound") {
+          console.log("File does not exist!", key);
+        }
+        return null;
+      }
+    })
+  );
+  console.log("urls:", urls);
+  res.json({ getUrls: urls });
 });
 
 export { getPutPresignedS3URL, getGetPresignedS3URL };
