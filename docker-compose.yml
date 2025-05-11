@@ -9,6 +9,7 @@ services:
       - "3000:3000" # Expose the frontend on port 3000 of your machine
     volumes:
       - ./frontend:/app # Mount the frontend folder into the container
+      - /app/node_modules
     depends_on:
       - backend # Ensures backend is started before frontend
     environment:
@@ -22,6 +23,10 @@ services:
       context: ./backend # Points to your backend folder where Dockerfile is
     ports:
       - "8000:8000" # Expose backend API on port 8000
+    volumes:
+      - ./backend:/app
+      - ./backend/.env:/app/.env
+      - /app/node_modules
     environment:
       - .env # env variables
     depends_on:
