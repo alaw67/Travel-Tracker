@@ -15,5 +15,5 @@ COPY . .
 EXPOSE 5050
 
 # Run with nodemon for hot-reloading
-RUN npm install -g nodemon
-CMD ["npm", "run", "app"]
+# RUN npm install -g nodemon
+CMD ["node", "index.js"]
