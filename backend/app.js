@@ -10,7 +10,13 @@ connectDB();
 const PORT = process.env.PORT || 5050;
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://trekd.live/", // or custom domain
+    credentials: true, // if using cookies or auth headers
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
