@@ -80,6 +80,7 @@ const CropTool = ({
   const imageType = image.type;
   const imageName = image.name;
   const imageUrl = URL.createObjectURL(image);
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -98,7 +99,7 @@ const CropTool = ({
 
     try {
       const response = await fetch(
-        `/api/users/s3_put_presigned_url?key=${user.id}/${countryName}/${imageNum}&fileType=${file.type}`,
+        `${apiUrl}/api/users/s3_put_presigned_url?key=${user.id}/${countryName}/${imageNum}&fileType=${file.type}`,
         {
           method: "GET",
           headers: {
@@ -109,7 +110,7 @@ const CropTool = ({
 
       const { uploadUrl } = await response.json(); // This is the S3 upload URL
       console.log("uploadUrl", uploadUrl);
-      const uploadResponse = await fetch(uploadUrl, {
+      const uploadResponse = await fetch(`${apiUrl}/uploadUrl`, {
         method: "PUT",
         body: file,
         headers: {

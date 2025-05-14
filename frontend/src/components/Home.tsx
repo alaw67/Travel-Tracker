@@ -33,6 +33,7 @@ const Home = () => {
 
   const { user, loading } = useAuthContext();
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const [visitedCountries, setVisitedCountries] = useState<[string]>([""]);
   const [isRemovingCountry, setIsRemovingCountry] = useState<boolean>(false);
@@ -105,7 +106,7 @@ const Home = () => {
   useEffect(() => {
     const setIsFollowing = async () => {
       const response = await fetch(
-        `/api/users/following?followerId=${user.id}&followingId=${curVisitingUser._id}`,
+        `${apiUrl}/api/users/following?followerId=${user.id}&followingId=${curVisitingUser._id}`,
         {
           method: "GET",
           headers: {
@@ -135,7 +136,7 @@ const Home = () => {
     console.log("user: ", user);
 
     const getVisitedCountries = async () => {
-      const countriesResponse = await fetch("/api/users/countries", {
+      const countriesResponse = await fetch(`${apiUrl}/api/users/countries`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

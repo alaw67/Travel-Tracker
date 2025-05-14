@@ -7,6 +7,7 @@ export const useLogIn = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { dispatch } = useAuthContext();
   const navigate = useNavigate();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const logIn = async (email: string, password: string) => {
     setIsLoading(true);
@@ -14,7 +15,7 @@ export const useLogIn = () => {
 
     console.log("login data: ", JSON.stringify({ email, password }));
 
-    const response = await fetch("/api/users/login", {
+    const response = await fetch(`${apiUrl}/api/users/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

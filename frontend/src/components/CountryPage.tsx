@@ -40,6 +40,7 @@ const CountryPage = ({
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
   const { user, loading } = useAuthContext();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const imageNums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -53,7 +54,7 @@ const CountryPage = ({
       keys.forEach((key) => params.append("key", key));
       try {
         const response = await fetch(
-          `/api/users/s3_get_presigned_url?${params.toString()}"`,
+          `${apiUrl}/api/users/s3_get_presigned_url?${params.toString()}"`,
           {
             method: "GET",
             headers: {

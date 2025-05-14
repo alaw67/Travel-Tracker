@@ -14,6 +14,7 @@ const CountrySearchBar = ({
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
   const [focused, setFocused] = useState<boolean>(false);
   const { user } = useAuthContext();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -40,7 +41,7 @@ const CountrySearchBar = ({
 
   const addVisitedCountry = async (country: string) => {
     console.log("token...", user?.token);
-    const response = await fetch("/api/users/countries", {
+    const response = await fetch(`${apiUrl}/api/users/countries`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
