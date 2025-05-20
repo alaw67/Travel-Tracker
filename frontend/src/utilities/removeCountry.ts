@@ -1,5 +1,6 @@
 export const removeCountry = async (token: string, country: string) => {
-  const response = await fetch("/api/users/countries/delete", {
+  const apiUrl = process.env.REACT_APP_API_URL;
+  const response = await fetch(`${apiUrl}/api/users/countries/delete`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",

@@ -26,6 +26,7 @@ const UserSearchBar = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const [focused, setFocused] = useState<boolean>(false);
   const { user } = useAuthContext();
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   console.log("user", user);
 
@@ -36,7 +37,7 @@ const UserSearchBar = ({
     }
     try {
       const response = await fetch(
-        `api/users/following/search?query=${query}`,
+        `${apiUrl}/api/users/following/search?query=${query}`,
         {
           method: "GET",
           headers: {
