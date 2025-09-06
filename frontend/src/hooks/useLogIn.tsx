@@ -14,7 +14,7 @@ export const useLogIn = () => {
     setError(null);
 
     console.log("login data: ", JSON.stringify({ email, password }));
-    console.log("apiUrl", apiUrl);
+    console.log("apiUrl", process.env.API_URL);
 
     const response = await fetch(`${apiUrl}/api/users/login`, {
       method: "POST",
