@@ -40,7 +40,7 @@ const CountryPage = ({
   const [allImagesLoaded, setAllImagesLoaded] = useState(false);
 
   const { user, loading } = useAuthContext();
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = process.env.API_URL;
 
   const imageNums = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 

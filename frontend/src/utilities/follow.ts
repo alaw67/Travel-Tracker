@@ -3,7 +3,7 @@ export const followUser = async (
   followingId: string,
   token: string
 ) => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = process.env.API_URL;
   const res = await fetch(`${apiUrl}/api/users/following/follow`, {
     method: "POST",
     headers: {

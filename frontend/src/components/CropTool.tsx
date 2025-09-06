@@ -80,7 +80,7 @@ const CropTool = ({
   const imageType = image.type;
   const imageName = image.name;
   const imageUrl = URL.createObjectURL(image);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = process.env.API_URL;
 
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);

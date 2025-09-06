@@ -26,7 +26,7 @@ const UserSearchBar = ({
   const [showDropdown, setShowDropdown] = useState(false);
   const [focused, setFocused] = useState<boolean>(false);
   const { user } = useAuthContext();
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = process.env.API_URL;
 
   console.log("user", user);
 
