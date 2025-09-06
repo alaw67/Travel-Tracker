@@ -134,6 +134,7 @@ const Home = () => {
       navigate("/login");
     }
     console.log("user: ", user);
+    console.log("loading", loading);
 
     const getVisitedCountries = async () => {
       const countriesResponse = await fetch(`${apiUrl}/api/users/countries`, {
