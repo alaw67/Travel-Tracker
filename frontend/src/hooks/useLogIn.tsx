@@ -7,14 +7,14 @@ export const useLogIn = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { dispatch } = useAuthContext();
   const navigate = useNavigate();
-  const apiUrl = process.env.API_URL;
+  const apiUrl = process.env.REACT_APP_API_URL;
 
   const logIn = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
 
     console.log("login data: ", JSON.stringify({ email, password }));
-    console.log("apiUrl", process.env.API_URL);
+    console.log("apiUrl", process.env.REACT_APP_API_URL);
 
     const response = await fetch(`${apiUrl}/api/users/login`, {
       method: "POST",
