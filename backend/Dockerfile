@@ -11,9 +11,9 @@ RUN npm install
 # Copy the rest of the app code
 COPY . .
 
-# Expose the port your backend runs on (e.g., 5000)
+# Expose the port your backend runs on
 EXPOSE 5050
 
 # Run with nodemon for hot-reloading
 # RUN npm install -g nodemon
-CMD ["node", "index.js"]
+CMD ["node", "app.js"]

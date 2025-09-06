@@ -22,7 +22,7 @@ services:
     build:
       context: ./backend # Points to your backend folder where Dockerfile is
     ports:
-      - "8000:8000" # Expose backend API on port 8000
+      - "5050:5050" # Expose backend API on port
     volumes:
       - ./backend:/app
       - ./backend/.env:/app/.env
