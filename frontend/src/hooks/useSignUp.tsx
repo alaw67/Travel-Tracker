@@ -14,7 +14,7 @@ export const useSignUp = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { dispatch } = useAuthContext();
   const navigate = useNavigate();
-  const apiUrl = process.env.REACT_APP_API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const signUp = async (user: User) => {
     setIsLoading(true);

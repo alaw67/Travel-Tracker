@@ -33,7 +33,7 @@ const Home = () => {
 
   const { user, loading } = useAuthContext();
   const navigate = useNavigate();
-  const apiUrl = process.env.REACT_APP_API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const [visitedCountries, setVisitedCountries] = useState<[string]>([""]);
   const [isRemovingCountry, setIsRemovingCountry] = useState<boolean>(false);
