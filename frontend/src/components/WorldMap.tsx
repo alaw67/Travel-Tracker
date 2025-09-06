@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import geoData from "../data/geoData.json";
 
-const WorldMap = ({ visitingUser }: { visitingUser: any }) => {
+const WorldMap = ({ visitedCountries }: { visitedCountries: string[] }) => {
   console.log("rendering map");
 
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
@@ -19,7 +19,7 @@ const WorldMap = ({ visitingUser }: { visitingUser: any }) => {
     setSelectedCountry(null);
   };
 
-  if (!("visitedCountries" in visitingUser)) {
+  if (!visitedCountries) {
     return <div></div>;
   }
 
@@ -52,9 +52,7 @@ const WorldMap = ({ visitingUser }: { visitingUser: any }) => {
                 // onMouseLeave={() => handleCountryLeave()}
                 style={{
                   default: {
-                    fill: visitingUser.visitedCountries.includes(
-                      geo.properties.name
-                    )
+                    fill: visitedCountries.includes(geo.properties.name)
                       ? "#3388b0"
                       : "#e1e8ed",
                     outline: "none",

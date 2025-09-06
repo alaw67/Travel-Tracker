@@ -1,20 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import countries from "../data/countries";
 import { Box, TextField, List, ListItemButton, Paper } from "@mui/material";
 import { useAuthContext } from "../hooks/useAuthContext";
 
 const CountrySearchBar = ({
   setVisitedCountries,
+  visitedCountries,
 }: {
   setVisitedCountries: (countries: [string]) => void;
+  visitedCountries: string[];
 }) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [filteredCountries, setFilteredCountries] =
     useState<string[]>(countries);
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  const [alreadyVisited, setAlreadyVisited] = useState<Set<string>>(new Set());
+
   const [focused, setFocused] = useState<boolean>(false);
   const { user } = useAuthContext();
   const apiUrl = process.env.REACT_APP_API_URL;
+
+  useEffect(() => {
+    setAlreadyVisited(new Set(visitedCountries));
+  }, [visitedCountries]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -23,8 +31,10 @@ const CountrySearchBar = ({
     if (!value) {
       setShowDropdown(false);
     } else {
-      const filtered = countries.filter((country) =>
-        country.toLowerCase().includes(value.toLowerCase())
+      const filtered = countries.filter(
+        (country) =>
+          country.toLowerCase().includes(value.toLowerCase()) &&
+          !alreadyVisited.has(country)
       );
       setFilteredCountries(filtered);
 

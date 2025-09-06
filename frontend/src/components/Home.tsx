@@ -92,7 +92,7 @@ const Home = () => {
   const renderPage = () => {
     switch (pageToRender) {
       case "visitPage":
-        return <WorldMap visitingUser={curVisitingUser} />;
+        return <WorldMap visitedCountries={visitedCountries} />;
       case "countryPage":
         return (
           <CountryPage
@@ -179,6 +179,7 @@ const Home = () => {
           flexDirection: "column",
         }}>
         <ToolBar
+          visitedCountries={visitedCountries}
           setVisitedCountries={setVisitedCountries}
           setListToShow={setListToShow}
           listToShow={listToShow}

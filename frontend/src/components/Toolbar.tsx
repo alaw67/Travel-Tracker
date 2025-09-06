@@ -7,12 +7,14 @@ import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import PeopleIcon from "@mui/icons-material/People";
 
 const Toolbar = ({
+  visitedCountries,
   setVisitedCountries,
   setListToShow,
   listToShow,
   setCurVisitingUser,
   setPageToRender,
 }: {
+  visitedCountries: string[];
   setVisitedCountries: (countries: [string]) => void;
   setListToShow: (value: string) => void;
   listToShow: string;
@@ -28,7 +30,10 @@ const Toolbar = ({
         alignItems: "center",
       }}>
       {listToShow === "countries" ? (
-        <CountrySearchBar setVisitedCountries={setVisitedCountries} />
+        <CountrySearchBar
+          setVisitedCountries={setVisitedCountries}
+          visitedCountries={visitedCountries}
+        />
       ) : (
         <UserSearchBar
           setCurVisitingUser={setCurVisitingUser}

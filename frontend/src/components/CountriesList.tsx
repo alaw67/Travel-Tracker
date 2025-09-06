@@ -18,6 +18,7 @@ const CountriesList = ({
   setFocusedCountry: (country: string) => void;
 }) => {
   console.log("rendering countries list");
+
   const CountryItem = ({ countryName }: { countryName: string }) => {
     const [deleteUserOption, setDeleteUserOption] = useState<boolean>(false);
     var countryCode: string =
@@ -49,7 +50,7 @@ const CountriesList = ({
           setPageToRender("countryPage");
         }}>
         <CircleFlag countryCode={countryCode} height="40" />
-        <Typography sx={{ marginLeft: "30px" }} variant="body1">
+        <Typography noWrap sx={{ marginLeft: "30px" }} variant="body1">
           {countryName}
         </Typography>
         <Box
@@ -105,7 +106,7 @@ const CountriesList = ({
           paddingBottom: "20px",
           overflowY: "scroll",
         }}>
-        {visitedCountries.map((country, i) => (
+        {visitedCountries.sort().map((country, i) => (
           <CountryItem key={i} countryName={country} />
         ))}
       </Box>
