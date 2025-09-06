@@ -161,7 +161,7 @@ const Home = () => {
       getVisitedCountries();
       fetchFollowing();
     }
-  }, [user]);
+  }, [user, loading]);
 
   return (
     <Box
