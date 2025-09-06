@@ -18,7 +18,7 @@ const CountrySearchBar = ({
 
   const [focused, setFocused] = useState<boolean>(false);
   const { user } = useAuthContext();
-  const apiUrl = process.env.REACT_APP_API_URL;
+  const apiUrl = process.env.API_URL;
 
   useEffect(() => {
     setAlreadyVisited(new Set(visitedCountries));

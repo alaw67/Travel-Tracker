@@ -7,7 +7,7 @@ export const useLogIn = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { dispatch } = useAuthContext();
   const navigate = useNavigate();
-  const apiUrl = process.env.REACT_APP_API_URL;
+  const apiUrl = process.env.API_URL;
 
   const logIn = async (email: string, password: string) => {
     setIsLoading(true);
