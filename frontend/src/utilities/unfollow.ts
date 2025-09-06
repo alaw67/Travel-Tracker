@@ -3,7 +3,7 @@ export const unfollowUser = async (
   followingId: string,
   token: string
 ) => {
-  const apiUrl = process.env.API_URL;
+  const apiUrl = process.env.REACT_APP_API_URL;
   const res = await fetch(`${apiUrl}/api/users/following/unfollow`, {
     method: "POST",
     headers: {
