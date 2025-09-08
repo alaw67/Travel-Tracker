@@ -5,6 +5,7 @@ import OutlinedFlagIcon from "@mui/icons-material/OutlinedFlag";
 import FlagRoundedIcon from "@mui/icons-material/FlagRounded";
 import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import PeopleIcon from "@mui/icons-material/People";
+import ProfileDropdown from "./ProfileDropdown";
 
 const Toolbar = ({
   visitedCountries,
@@ -13,6 +14,7 @@ const Toolbar = ({
   listToShow,
   setCurVisitingUser,
   setPageToRender,
+  curUser,
 }: {
   visitedCountries: string[];
   setVisitedCountries: (countries: [string]) => void;
@@ -20,6 +22,7 @@ const Toolbar = ({
   listToShow: string;
   setCurVisitingUser: (user: any) => void;
   setPageToRender: (page: string) => void;
+  curUser: any;
 }) => {
   return (
     <Box
@@ -29,6 +32,7 @@ const Toolbar = ({
         marginTop: "10px",
         alignItems: "center",
       }}>
+      <ProfileDropdown user={curUser} />
       {listToShow === "countries" ? (
         <CountrySearchBar
           setVisitedCountries={setVisitedCountries}

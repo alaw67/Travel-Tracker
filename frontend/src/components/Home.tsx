@@ -92,7 +92,15 @@ const Home = () => {
   const renderPage = () => {
     switch (pageToRender) {
       case "visitPage":
-        return <WorldMap visitedCountries={visitedCountries} />;
+        return (
+          <WorldMap
+            visitedCountries={
+              Object.keys(curVisitingUser).length === 0
+                ? visitedCountries
+                : curVisitingUser.visitedCountries
+            }
+          />
+        );
       case "countryPage":
         return (
           <CountryPage
@@ -179,6 +187,7 @@ const Home = () => {
           flexDirection: "column",
         }}>
         <ToolBar
+          curUser={user}
           visitedCountries={visitedCountries}
           setVisitedCountries={setVisitedCountries}
           setListToShow={setListToShow}
