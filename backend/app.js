@@ -12,7 +12,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://trekd.live/", // or custom domain
+    origin: "http://localhost:3000", // or custom domain
     credentials: true, // if using cookies or auth headers
   })
 );
