@@ -3,7 +3,7 @@ import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import geoData from "../data/geoData.json";
 
 const WorldMap = ({ visitedCountries }: { visitedCountries: string[] }) => {
-  console.log("rendering map");
+  console.log("rendering map", visitedCountries);
 
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
@@ -75,4 +75,4 @@ const WorldMap = ({ visitedCountries }: { visitedCountries: string[] }) => {
   );
 };
 
-export default React.memo(WorldMap);
+export default WorldMap;

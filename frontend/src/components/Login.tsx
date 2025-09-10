@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -27,7 +27,7 @@ function Copyright({ styles }: CopyrightProps) {
       {...styles}>
       {"Copyright © "}
       <Link color="inherit" href="https://mui.com/">
-        Travel Tracker
+        Trekd
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -35,21 +35,23 @@ function Copyright({ styles }: CopyrightProps) {
   );
 }
 
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 const Login = () => {
-  const emailRef = useRef<string>("");
-  const passwordRef = useRef<string>("");
+  // Controlled state for email and password
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const { logIn, error, isLoading } = useLogIn();
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log({
-      email: emailRef.current,
-      password: passwordRef.current,
-    });
 
-    await logIn(emailRef.current, passwordRef.current);
+    const loginRes = await logIn(email, password);
+
+    if (!loginRes) {
+      // Clear the password on failed login attempt
+      setPassword("");
+    }
   };
 
   return (
@@ -97,7 +99,8 @@ const Login = () => {
                 margin="normal"
                 required
                 fullWidth
-                onChange={(e) => (emailRef.current = e.target.value)}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 id="email"
                 label="Email Address"
                 name="email"
@@ -108,19 +111,16 @@ const Login = () => {
                 margin="normal"
                 required
                 fullWidth
-                onChange={(e) => (passwordRef.current = e.target.value)}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 name="password"
                 label="Password"
                 type="password"
                 id="password"
                 autoComplete="current-password"
               />
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
               {error && (
-                <Typography color="red" align="center" variant={"subtitle2"}>
+                <Typography color="red" align="center" variant="subtitle2">
                   {error}
                 </Typography>
               )}

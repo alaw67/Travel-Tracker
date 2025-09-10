@@ -56,8 +56,6 @@ const registerUser = asyncHandler(async (req, res) => {
     firstName,
     lastName,
     email,
-    following: [],
-    followers: [],
     password: hashedPassword,
   });
 
@@ -69,8 +67,9 @@ const registerUser = asyncHandler(async (req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      following: [],
-      followers: [],
+      following: user.following,
+      followers: user.followers,
+      visitedCountries: user.visitedCountries,
       token: generateToken(user.id),
     });
   } else {

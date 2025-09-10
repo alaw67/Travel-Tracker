@@ -48,9 +48,10 @@ const Home = () => {
 
   const [isFollowingUser, setIsFollowingUser] = useState<boolean | null>(null);
 
+  console.log("userrr", user);
+
   const fetchFollowing = useCallback(async () => {
     console.log("fetching following");
-    console.log("userrr", user);
     try {
       const res = await getFollowing(user.id, user.token);
       console.log("res:", res);
@@ -92,7 +93,15 @@ const Home = () => {
   const renderPage = () => {
     switch (pageToRender) {
       case "visitPage":
-        return <WorldMap visitedCountries={visitedCountries} />;
+        return (
+          <WorldMap
+            visitedCountries={
+              curVisitingUser === user
+                ? visitedCountries
+                : curVisitingUser.visitedCountries
+            }
+          />
+        );
       case "countryPage":
         return (
           <CountryPage
@@ -180,6 +189,7 @@ const Home = () => {
           flexDirection: "column",
         }}>
         <ToolBar
+          curUser={user}
           visitedCountries={visitedCountries}
           setVisitedCountries={setVisitedCountries}
           setListToShow={setListToShow}
