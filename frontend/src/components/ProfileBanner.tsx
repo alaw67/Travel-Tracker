@@ -19,6 +19,11 @@ const ProfileBanner = ({
   isFollowingUser: boolean | null;
 }) => {
   const { user } = useAuthContext();
+  console.log("visiting user", visitingUser);
+  if (!visitingUser) {
+    return <Box></Box>;
+  }
+
   return (
     <Box
       sx={{

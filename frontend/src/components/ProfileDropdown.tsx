@@ -45,7 +45,9 @@ const ProfileDropdown = ({ user }: { user: any }) => {
               width: 32,
               height: 32,
             }}>
-            {user ? `${user.firstName[0]}${user.lastName[0]}` : ""}
+            {user
+              ? `${user.firstName[0].toUpperCase()}${user.lastName[0].toUpperCase()}`
+              : ""}
           </Avatar>
         </IconButton>
       </Box>

@@ -48,9 +48,10 @@ const Home = () => {
 
   const [isFollowingUser, setIsFollowingUser] = useState<boolean | null>(null);
 
+  console.log("userrr", user);
+
   const fetchFollowing = useCallback(async () => {
     console.log("fetching following");
-    console.log("userrr", user);
     try {
       const res = await getFollowing(user.id, user.token);
       console.log("res:", res);
@@ -95,7 +96,7 @@ const Home = () => {
         return (
           <WorldMap
             visitedCountries={
-              Object.keys(curVisitingUser).length === 0
+              curVisitingUser === user
                 ? visitedCountries
                 : curVisitingUser.visitedCountries
             }
