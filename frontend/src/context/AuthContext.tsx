@@ -12,7 +12,6 @@ export type UserState = {
   lastName: string;
   email: string;
   id: string;
-  token: string;
 };
 
 type State = {
@@ -37,13 +36,35 @@ export const AuthContextProvider = ({ children }: any) => {
   });
 
   useEffect(() => {
-    if (localStorage.getItem("user")) {
-      dispatch({
-        type: "LOGIN",
-        payload: JSON.parse(localStorage.getItem("user")!),
-      });
-    }
-    setLoading(false);
+    // Check if user is authenticated by making a request to /me endpoint
+    const checkAuth = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/api/users/me`, {
+          method: "GET",
+          credentials: 'include', // Include cookies in the request
+        });
+        console.log("response: ", response);
+        if (response.ok) {
+          const userData = await response.json();
+          dispatch({
+            type: "LOGIN",
+            payload: userData,
+          });
+        } else {
+          console.log("response not ok");
+          dispatch({
+            type: "LOGOUT",
+            payload: null,
+          });
+        }
+      } catch (error) {
+        console.log("User not authenticated");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    checkAuth();
   }, []);
 
   return (

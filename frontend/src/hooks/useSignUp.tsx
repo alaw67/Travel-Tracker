@@ -25,6 +25,7 @@ export const useSignUp = () => {
     const response = await fetch(`${apiUrl}/api/users/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: 'include', // Include cookies in the request
       body: JSON.stringify(user),
     });
 
@@ -37,9 +38,6 @@ export const useSignUp = () => {
       setIsLoading(false);
       setError(data.error);
     } else {
-      // save the user to local storage
-      localStorage.setItem("user", JSON.stringify(data));
-
       dispatch({ type: "LOGIN", payload: data });
 
       setIsLoading(false);

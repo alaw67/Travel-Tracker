@@ -48,13 +48,9 @@ const Home = () => {
 
   const [isFollowingUser, setIsFollowingUser] = useState<boolean | null>(null);
 
-  console.log("userrr", user);
-
   const fetchFollowing = useCallback(async () => {
-    console.log("fetching following");
     try {
-      const res = await getFollowing(user.id, user.token);
-      console.log("res:", res);
+      const res = await getFollowing(user.id);
       setFollowingUsers(res);
     } catch (err) {
       console.error(err);
@@ -63,9 +59,9 @@ const Home = () => {
 
   const followUnfollow = async () => {
     if (isFollowingUser) {
-      await unfollowUser(user.id, curVisitingUser._id, user.token);
+      await unfollowUser(user.id, curVisitingUser._id);
     } else {
-      await followUser(user.id, curVisitingUser._id, user.token);
+      await followUser(user.id, curVisitingUser._id);
     }
     setIsFollowingUser(!isFollowingUser);
     fetchFollowing();
@@ -73,8 +69,7 @@ const Home = () => {
 
   const removeVisitedCountry = async () => {
     try {
-      const res = await removeCountry(user.token, countryToRemove);
-      console.log("visited countries res: ", res);
+      const res = await removeCountry(countryToRemove);
       setVisitedCountries(res.visitedCountries);
     } catch (err) {
       console.error(err);
@@ -83,7 +78,7 @@ const Home = () => {
 
   const unfollow = async () => {
     try {
-      await unfollowUser(user.id, userToRemove, user.token);
+      await unfollowUser(user.id, userToRemove);
       fetchFollowing();
     } catch (err) {
       console.error(err);
@@ -118,10 +113,7 @@ const Home = () => {
         `${apiUrl}/api/users/following?followerId=${user.id}&followingId=${curVisitingUser._id}`,
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
+          credentials: 'include', // Include cookies in the request
         }
       );
 
@@ -129,7 +121,6 @@ const Home = () => {
         console.log("Failed to get isFollowing data");
       } else {
         const isFollowing = await response.json();
-        console.log("isFollowing", isFollowing);
         setIsFollowingUser(isFollowing);
       }
     };
@@ -147,10 +138,7 @@ const Home = () => {
     const getVisitedCountries = async () => {
       const countriesResponse = await fetch(`${apiUrl}/api/users/countries`, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.token}`,
-        },
+        credentials: 'include', // Include cookies in the request
       });
 
       console.log("response: ", countriesResponse);
@@ -165,12 +153,11 @@ const Home = () => {
       }
     };
     if (!loading && user) {
-      console.log("fetch following with user:", user);
       setCurVisitingUser(user);
       getVisitedCountries();
       fetchFollowing();
     }
-  }, [user]);
+  }, [user, loading]);
 
   return (
     <Box

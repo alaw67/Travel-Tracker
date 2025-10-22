@@ -1,11 +1,11 @@
-export const removeCountry = async (token: string, country: string) => {
+export const removeCountry = async (country: string) => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const response = await fetch(`${apiUrl}/api/users/countries/delete`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
     },
+    credentials: 'include', // Include cookies in the request
     body: JSON.stringify({ country: country }),
   });
 

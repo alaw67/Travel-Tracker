@@ -1,13 +1,10 @@
-export const getFollowing = async (userId: string, token: string) => {
+export const getFollowing = async (userId: string) => {
   const apiUrl = process.env.REACT_APP_API_URL;
   const res = await fetch(
     `${apiUrl}/api/users/following/following?userId=${userId}`,
     {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      credentials: 'include', // Include cookies in the request
     }
   );
 

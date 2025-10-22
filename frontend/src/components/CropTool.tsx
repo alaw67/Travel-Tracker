@@ -102,9 +102,7 @@ const CropTool = ({
         `${apiUrl}/api/users/s3_put_presigned_url?key=${user.id}/${countryName}/${imageNum}&fileType=${file.type}`,
         {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
+          credentials: 'include', // Include cookies in the request
         }
       );
 

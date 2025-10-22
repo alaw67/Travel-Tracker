@@ -33,7 +33,7 @@ const CountrySearchBar = ({
     } else {
       const filtered = countries.filter(
         (country) =>
-          country.toLowerCase().includes(value.toLowerCase()) &&
+          country.toLowerCase().startsWith(value.toLowerCase()) &&
           !alreadyVisited.has(country)
       );
       setFilteredCountries(filtered);
@@ -55,8 +55,8 @@ const CountrySearchBar = ({
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${user.token}`,
       },
+      credentials: 'include', // Include cookies in the request
       body: JSON.stringify({ country: country }),
     });
 

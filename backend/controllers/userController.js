@@ -13,6 +13,16 @@ const loginUser = asyncHandler(async (req, res) => {
   console.log("user: ", user);
 
   if (user && (await bcrypt.compare(password, user.password))) {
+    const token = generateToken(user.id);
+    
+    // Set cookie with token
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+    });
+
     res.json({
       id: user.id,
       firstName: user.firstName,
@@ -21,7 +31,6 @@ const loginUser = asyncHandler(async (req, res) => {
       visitedCountries: user.visitedCountries,
       following: [],
       followers: [],
-      token: generateToken(user.id),
     });
   } else {
     res.status(400);
@@ -62,6 +71,16 @@ const registerUser = asyncHandler(async (req, res) => {
   console.log("created user", user);
 
   if (user) {
+    const token = generateToken(user.id);
+    
+    // Set cookie with token
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+    });
+
     res.status(201).json({
       id: user.id,
       firstName: user.firstName,
@@ -70,7 +89,6 @@ const registerUser = asyncHandler(async (req, res) => {
       following: user.following,
       followers: user.followers,
       visitedCountries: user.visitedCountries,
-      token: generateToken(user.id),
     });
   } else {
     res.status(400);
@@ -111,9 +129,21 @@ const getUser = asyncHandler(async (req, res) => {
   }
 });
 
+// Logout User
+const logoutUser = asyncHandler(async (req, res) => {
+  res.cookie('token', '', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    expires: new Date(0) // Expire immediately
+  });
+  
+  res.status(200).json({ message: 'Logged out successfully' });
+});
+
 // Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
-export { loginUser, registerUser, getMe, getUser };
+export { loginUser, registerUser, getMe, getUser, logoutUser };

@@ -40,10 +40,7 @@ const UserSearchBar = ({
         `${apiUrl}/api/users/following/search?query=${query}`,
         {
           method: "GET",
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-            "Content-Type": "application/json",
-          },
+          credentials: 'include', // Include cookies in the request
         }
       );
       if (!response.ok) {

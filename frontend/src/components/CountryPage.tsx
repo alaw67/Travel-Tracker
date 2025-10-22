@@ -57,9 +57,7 @@ const CountryPage = ({
           `${apiUrl}/api/users/s3_get_presigned_url?${params.toString()}"`,
           {
             method: "GET",
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
+            credentials: 'include', // Include cookies in the request
           }
         );
 
@@ -110,6 +108,7 @@ const CountryPage = ({
         src={imageUrls[imageNum - 1]}
         alt={`${imageNum}`}
         style={{ maxWidth: "100%", maxHeight: "400px", objectFit: "contain" }}
+        loading="lazy"
       />
     ) : (
       <Button

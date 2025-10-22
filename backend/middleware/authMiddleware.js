@@ -5,14 +5,20 @@ import User from "../models/userModel.js";
 const protect = asyncHandler(async (req, res, next) => {
   let token;
 
-  if (
+  // First try to get token from cookies
+  if (req.cookies && req.cookies.token) {
+    token = req.cookies.token;
+  }
+  // Fallback to Authorization header for backward compatibility
+  else if (
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   ) {
-    try {
-      // Get token from header
-      token = req.headers.authorization.split(" ")[1];
+    token = req.headers.authorization.split(" ")[1];
+  }
 
+  if (token) {
+    try {
       // Verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
@@ -25,9 +31,7 @@ const protect = asyncHandler(async (req, res, next) => {
       res.status(401);
       throw new Error("Not Authorized");
     }
-  }
-
-  if (!token) {
+  } else {
     res.status(401);
     throw new Error("Not authorized, no token");
   }

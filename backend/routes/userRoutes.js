@@ -4,6 +4,7 @@ import {
   registerUser,
   getMe,
   getUser,
+  logoutUser,
 } from "../controllers/userController.js";
 import {
   getVisitedCountries,
@@ -30,6 +31,7 @@ const router = express.Router();
 
 router.post("/signup", registerUser);
 router.post("/login", loginUser);
+router.post("/logout", logoutUser);
 router.patch("/countries", protect, addVisitedCountry);
 router.patch("/countries/delete", protect, removeVisitedCountry);
 router.get("/me", protect, getMe);
